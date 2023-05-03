@@ -20,8 +20,14 @@
 #define TEMPQUEUE_H
 
 #include "ns3/queue.h"
+#include "ns3/packet.h"
 #include "ns3/command-line.h"
 #include "ns3/packet-filter.h"
+#include "ns3/queue-item.h"
+#include "ns3/udp-header.h"
+#include "ns3/ipv4-header.h"
+#include "ns3/ethernet-header.h"
+
 
 using namespace std;
 
@@ -146,32 +152,6 @@ TempQueue<Item>::GetContainer() const
 // }
 
 template <typename Item>
-Ptr<Item>
-TempQueue<Item>::DoDequeue(void)
-{
-    NS_LOG_FUNCTION(this);
-
-    Ptr<Item> item = NULL;
-
-    NS_LOG_LOGIC("Popped " << item);
-
-    return item;
-}
-
-template <typename Item>
-Ptr<Item>
-TempQueue<Item>::DoDequeue(list<Ptr<Item>> queue)
-{
-    NS_LOG_FUNCTION(this);
-
-    Ptr<Item> item = NULL;
-
-    NS_LOG_LOGIC("Popped " << item);
-
-    return item;
-}
-
-template <typename Item>
 bool
 TempQueue<Item>::Enqueue(Ptr<Item> item)
 {
@@ -236,8 +216,14 @@ TempQueue<Item>::DoPeek(void) const
 {
     NS_LOG_FUNCTION(this);
 
-    Ptr<const Item> item = NULL;
+    // if (queue.empty())
+    // {
+    //     return nullptr;
+    // }
 
+    // Ptr<const Item> item = queue.front();
+
+    Ptr<Item> item = NULL;
     return item;
 }
 
@@ -246,31 +232,84 @@ void
 TempQueue<Item>::Classify(Ptr<Item> item)
 {
     NS_LOG_FUNCTION(this << item);
+    // Ptr<Packet> packet = item->GetPacket();
+    // UdpHeader udpHeader;
+    // packet->PeekHeader(udpHeader);
 
-    // if (m_filter->Classify(item) == 10000)
+    // if (udpHeader.GetDestinationPort() == 10000)
     // {
     //     DoEnqueue(m_queue1, item);
     // }
-    // else if (m_filter->Classify(item) == 20000)
+    // else if (udpHeader.GetDestinationPort() == 20000)
     // {
     //     DoEnqueue(m_queue2, item);
     // }
 
-    DoEnqueue(m_queue1, item);
+        // Cast the Item to a Packet
+    Ptr<ns3::Packet> packet = ns3::DynamicCast<ns3::Packet>(item);
+
+    if (packet)
+    {
+        // Remove the Ethernet and IP headers
+        ns3::EthernetHeader ethernetHeader;
+        packet->RemoveHeader(ethernetHeader);
+
+        ns3::Ipv4Header ipv4Header;
+        packet->RemoveHeader(ipv4Header);
+
+        // Check the protocol number to ensure it's UDP (17)
+        if (ipv4Header.GetProtocol() == 17)
+        {
+            ns3::UdpHeader udpHeader;
+            packet->PeekHeader(udpHeader);
+
+            // Classify based on port number
+            if (udpHeader.GetDestinationPort() == 10000)
+            {
+                DoEnqueue(m_queue1, item);
+            }
+            else if (udpHeader.GetDestinationPort() == 20000)
+            {
+                DoEnqueue(m_queue2, item);
+            }
+            else
+            {
+                NS_LOG_WARN("Unknown UDP destination port: " << udpHeader.GetDestinationPort());
+            }
+        }
+        else
+        {
+            NS_LOG_WARN("Non-UDP packet received");
+        }
+
+        // Add the Ethernet and IP headers back
+        packet->AddHeader(ipv4Header);
+        packet->AddHeader(ethernetHeader);
+    }
+    else
+    {
+        NS_LOG_WARN("Failed to cast item to Packet");
+    }
+
 }
 
 template <typename Item>
 Ptr<Item>
 TempQueue<Item>::Schedule()
 {
-    NS_LOG_FUNCTION(this);
+    Ptr<Item> item = nullptr;
 
+    // FCFS scheduling logic
     if (!m_queue1.empty())
     {
-        return DoDequeue(m_queue1);
+        item = DoDequeue(m_queue1);
+    }
+    else if (!m_queue2.empty())
+    {
+        item = DoDequeue(m_queue2);
     }
 
-    return nullptr;
+    return item;
 }
 
 template <typename Item>
@@ -294,12 +333,37 @@ bool
 TempQueue<Item>::DoEnqueue(list<Ptr<Item>> queueList, Ptr<Item> p)
 {
     NS_LOG_FUNCTION(this << p);
-
-    queueList.insert(queueList.end(), p);
-
-    NS_LOG_LOGIC("Enqueued " << p);
-
+    queueList.push_back(p);
     return true;
+}
+
+template <typename Item>
+Ptr<Item>
+TempQueue<Item>::DoDequeue(void)
+{
+    NS_LOG_FUNCTION(this);
+
+    Ptr<Item> item = NULL;
+
+    NS_LOG_LOGIC("Popped " << item);
+
+    return item;
+}
+
+template <typename Item>
+Ptr<Item>
+TempQueue<Item>::DoDequeue(list<Ptr<Item>> queueList)
+{
+    NS_LOG_FUNCTION(this);
+
+    if (queueList.empty())
+    {
+        return nullptr;
+    }
+
+    Ptr<Item> item = queueList.front();
+    queueList.pop_front();
+    return item;
 }
 
 
