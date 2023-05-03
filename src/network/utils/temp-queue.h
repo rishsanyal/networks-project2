@@ -23,6 +23,8 @@
 #include "ns3/command-line.h"
 #include "ns3/packet-filter.h"
 
+using namespace std;
+
 namespace ns3
 {
 
@@ -50,16 +52,28 @@ private:
     void Classify(Ptr<Item> item);
     Ptr<Item> Schedule();
 
-    using Queue<Item>::GetContainer;
-    using Queue<Item>::DoEnqueue;
-    using Queue<Item>::DoDequeue;
-    using Queue<Item>::DoRemove;
-    using Queue<Item>::DoPeek;
+    // using Queue<Item>::GetContainer;
+    // using Queue<Item>::DoEnqueue;
+    // using Queue<Item>::DoDequeue;
+    // using Queue<Item>::DoRemove;
+    // using Queue<Item>::DoPeek;
 
-    Queue<Item> m_queue1; // Queue for UDP port 10000
-    Queue<Item> m_queue2; // Queue for UDP port 20000
 
-    Ptr<PacketFilter> m_filter; // Filter to classify packets
+    const list<Ptr<Item>>& GetContainer() const;
+    bool DoEnqueue (Ptr<Item> p);
+    bool DoEnqueue (list<Ptr<Item>> queue, Ptr<Item> p);
+    Ptr<Item> DoDequeue (void);
+    Ptr<Item> DoDequeue (list<Ptr<Item>> queue);
+    Ptr<Item> DoRemove (void);
+    Ptr<const Item> DoPeek (void) const;
+
+    // Queue<Item> m_queue1; // Queue for UDP port 10000
+    // Queue<Item> m_queue2; // Queue for UDP port 20000
+
+    list<Ptr<Item>> m_queue1;
+    list<Ptr<Item>> m_queue2;
+
+    // Ptr<PacketFilter> m_filter; // Filter to classify packets
 
     NS_LOG_TEMPLATE_DECLARE; //!< redefinition of the log component
 };
@@ -90,7 +104,7 @@ TempQueue<Item>::TempQueue()
       NS_LOG_TEMPLATE_DEFINE("TempQueue")
 {
     NS_LOG_FUNCTION(this);
-    m_filter = CreateObject<PacketFilter>();
+    // m_filter = CreateObject<PacketFilter>();
 }
 
 template <typename Item>
@@ -98,6 +112,16 @@ TempQueue<Item>::~TempQueue()
 {
     NS_LOG_FUNCTION(this);
 }
+
+template <typename Item>
+const list<Ptr<Item>>&
+TempQueue<Item>::GetContainer() const
+{
+    NS_LOG_FUNCTION(this);
+
+    return m_queue1;
+}
+
 
 // template <typename Item>
 // bool
@@ -120,6 +144,32 @@ TempQueue<Item>::~TempQueue()
 
 //     return item;
 // }
+
+template <typename Item>
+Ptr<Item>
+TempQueue<Item>::DoDequeue(void)
+{
+    NS_LOG_FUNCTION(this);
+
+    Ptr<Item> item = NULL;
+
+    NS_LOG_LOGIC("Popped " << item);
+
+    return item;
+}
+
+template <typename Item>
+Ptr<Item>
+TempQueue<Item>::DoDequeue(list<Ptr<Item>> queue)
+{
+    NS_LOG_FUNCTION(this);
+
+    Ptr<Item> item = NULL;
+
+    NS_LOG_LOGIC("Popped " << item);
+
+    return item;
+}
 
 template <typename Item>
 bool
@@ -151,7 +201,20 @@ TempQueue<Item>::Remove()
 {
     NS_LOG_FUNCTION(this);
 
-    Ptr<Item> item = DoRemove(GetContainer().begin());
+    Ptr<Item> item = DoRemove();
+
+    NS_LOG_LOGIC("Removed " << item);
+
+    return item;
+}
+
+template <typename Item>
+Ptr<Item>
+TempQueue<Item>::DoRemove()
+{
+    NS_LOG_FUNCTION(this);
+
+    Ptr<Item> item = NULL;
 
     NS_LOG_LOGIC("Removed " << item);
 
@@ -164,7 +227,18 @@ TempQueue<Item>::Peek() const
 {
     NS_LOG_FUNCTION(this);
 
-    return DoPeek(GetContainer().begin());
+    return DoPeek();
+}
+
+template <typename Item>
+Ptr<const Item>
+TempQueue<Item>::DoPeek(void) const
+{
+    NS_LOG_FUNCTION(this);
+
+    Ptr<const Item> item = NULL;
+
+    return item;
 }
 
 template <typename Item>
@@ -173,14 +247,16 @@ TempQueue<Item>::Classify(Ptr<Item> item)
 {
     NS_LOG_FUNCTION(this << item);
 
-    if (m_filter->Classify(item) == 10000)
-    {
-        m_queue1.Enqueue(item);
-    }
-    else if (m_filter->Classify(item) == 20000)
-    {
-        m_queue2.Enqueue(item);
-    }
+    // if (m_filter->Classify(item) == 10000)
+    // {
+    //     DoEnqueue(m_queue1, item);
+    // }
+    // else if (m_filter->Classify(item) == 20000)
+    // {
+    //     DoEnqueue(m_queue2, item);
+    // }
+
+    DoEnqueue(m_queue1, item);
 }
 
 template <typename Item>
@@ -189,12 +265,41 @@ TempQueue<Item>::Schedule()
 {
     NS_LOG_FUNCTION(this);
 
-    if (!m_queue1.IsEmpty())
+    if (!m_queue1.empty())
     {
-        return m_queue1.Dequeue();
+        return DoDequeue(m_queue1);
     }
 
     return nullptr;
+}
+
+template <typename Item>
+bool
+TempQueue<Item>::DoEnqueue(Ptr<Item> p)
+{
+    NS_LOG_FUNCTION(this << p);
+
+    // if (Queue<Item>::DoEnqueue(p))
+    // {
+    //     NS_LOG_LOGIC("Enqueued " << p);
+    //     return true;
+    // }
+
+    NS_LOG_LOGIC("Dropped " << p);
+    return false;
+}
+
+template <typename Item>
+bool
+TempQueue<Item>::DoEnqueue(list<Ptr<Item>> queueList, Ptr<Item> p)
+{
+    NS_LOG_FUNCTION(this << p);
+
+    queueList.insert(queueList.end(), p);
+
+    NS_LOG_LOGIC("Enqueued " << p);
+
+    return true;
 }
 
 
