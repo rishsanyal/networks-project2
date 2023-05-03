@@ -21,6 +21,7 @@
 
 #include "ns3/queue.h"
 #include "ns3/command-line.h"
+#include "ns3/packet-filter.h"
 
 namespace ns3
 {
@@ -33,19 +34,10 @@ namespace ns3
 template <typename Item>
 class TempQueue : public Queue<Item>
 {
-  public:
-    /**
-     * \brief Get the type ID.
-     * \return the object TypeId
-     */
+public:
     static TypeId GetTypeId();
-    /**
-     * \brief TempQueue Constructor
-     *
-     * Creates a droptail queue with a maximum size of 100 packets by default
-     */
-    TempQueue();
 
+    TempQueue();
     ~TempQueue() override;
 
     bool Enqueue(Ptr<Item> item) override;
@@ -53,12 +45,21 @@ class TempQueue : public Queue<Item>
     Ptr<Item> Remove() override;
     Ptr<const Item> Peek() const override;
 
-  private:
+private:
+    // Additional methods
+    void Classify(Ptr<Item> item);
+    Ptr<Item> Schedule();
+
     using Queue<Item>::GetContainer;
     using Queue<Item>::DoEnqueue;
     using Queue<Item>::DoDequeue;
     using Queue<Item>::DoRemove;
     using Queue<Item>::DoPeek;
+
+    Queue<Item> m_queue1; // Queue for UDP port 10000
+    Queue<Item> m_queue2; // Queue for UDP port 20000
+
+    Ptr<PacketFilter> m_filter; // Filter to classify packets
 
     NS_LOG_TEMPLATE_DECLARE; //!< redefinition of the log component
 };
@@ -89,6 +90,7 @@ TempQueue<Item>::TempQueue()
       NS_LOG_TEMPLATE_DEFINE("TempQueue")
 {
     NS_LOG_FUNCTION(this);
+    m_filter = CreateObject<PacketFilter>();
 }
 
 template <typename Item>
@@ -97,13 +99,36 @@ TempQueue<Item>::~TempQueue()
     NS_LOG_FUNCTION(this);
 }
 
+// template <typename Item>
+// bool
+// TempQueue<Item>::Enqueue(Ptr<Item> item)
+// {
+//     NS_LOG_FUNCTION(this << item);
+
+//     return DoEnqueue(GetContainer().end(), item);
+// }
+
+// template <typename Item>
+// Ptr<Item>
+// TempQueue<Item>::Dequeue()
+// {
+//     NS_LOG_FUNCTION(this);
+
+//     Ptr<Item> item = DoDequeue(GetContainer().begin());
+
+//     NS_LOG_LOGIC("Popped " << item);
+
+//     return item;
+// }
+
 template <typename Item>
 bool
 TempQueue<Item>::Enqueue(Ptr<Item> item)
 {
     NS_LOG_FUNCTION(this << item);
 
-    return DoEnqueue(GetContainer().end(), item);
+    Classify(item);
+    return true;
 }
 
 template <typename Item>
@@ -112,12 +137,13 @@ TempQueue<Item>::Dequeue()
 {
     NS_LOG_FUNCTION(this);
 
-    Ptr<Item> item = DoDequeue(GetContainer().begin());
+    Ptr<Item> item = Schedule();
 
     NS_LOG_LOGIC("Popped " << item);
 
     return item;
 }
+
 
 template <typename Item>
 Ptr<Item>
@@ -140,6 +166,37 @@ TempQueue<Item>::Peek() const
 
     return DoPeek(GetContainer().begin());
 }
+
+template <typename Item>
+void
+TempQueue<Item>::Classify(Ptr<Item> item)
+{
+    NS_LOG_FUNCTION(this << item);
+
+    if (m_filter->Classify(item) == 10000)
+    {
+        m_queue1.Enqueue(item);
+    }
+    else if (m_filter->Classify(item) == 20000)
+    {
+        m_queue2.Enqueue(item);
+    }
+}
+
+template <typename Item>
+Ptr<Item>
+TempQueue<Item>::Schedule()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (!m_queue1.IsEmpty())
+    {
+        return m_queue1.Dequeue();
+    }
+
+    return nullptr;
+}
+
 
 // The following explicit template instantiation declarations prevent all the
 // translation units including this header file to implicitly instantiate the
