@@ -237,7 +237,7 @@ main (int argc, char *argv[])
   // Set up the UdpEchoServer
   UdpEchoServerHelper echoServer (9);
 
-  // Ptr<TempQueue<Packet>> q = CreateObject<TempQueue<Packet>>();
+  Ptr<TempQueue<Packet>> q = CreateObject<TempQueue<Packet>>();
   // q->SetMaxSize(1000);
 
 
