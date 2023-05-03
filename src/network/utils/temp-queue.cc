@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) 2007 University of Washington
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -13,19 +15,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/core-module.h"
+#include "temp-queue.h"
+// #include "ns3/packet.h"
 
-using namespace ns3;
-
-NS_LOG_COMPONENT_DEFINE("ScratchSimulator");
-
-int
-main(int argc, char* argv[])
+namespace ns3
 {
-    NS_LOG_UNCOND("Scratch Simulator Please");
 
-    Simulator::Run();
-    Simulator::Destroy();
+NS_LOG_COMPONENT_DEFINE("TempQueue");
 
-    return 0;
-}
+NS_OBJECT_TEMPLATE_CLASS_DEFINE(TempQueue, Packet);
+NS_OBJECT_TEMPLATE_CLASS_DEFINE(TempQueue, QueueDiscItem);
+
+} // namespace ns3
