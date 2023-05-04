@@ -21,7 +21,8 @@
 #include "ns3/packet.h"
 #include "ns3/traffic-control-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/drop-tail-queue.h"
+#include "ns3/flow-monitor-helper.h"
+// #include "ns3/drop-tail-queue.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -38,153 +39,6 @@
 using namespace ns3;
 using namespace std;
 
-// class TwoQueues : public Queue<Packet>
-// {
-// public:
-//     // static TypeId GetTypeId (void);
-//     TwoQueues ();
-//     ~TwoQueues() override;
-// //   virtual ~TwoQueues ();
-//     static TypeId GetTypeId ();
-//     // virtual Ptr<Packet> DoDequeue (void) ;
-//     bool Enqueue(Ptr<Packet> item) override;
-//     Ptr<Packet> Remove() override;
-//     Ptr<Packet> Dequeue() override;
-//     Ptr<const Packet> Peek() const override;
-//     uint32_t GetTotalReceivedBytes (void) const;
-//     uint32_t GetNPackets (void) const;
-
-// private:
-// //   virtual bool DoEnqueue (Ptr<Packet> p);
-// //   virtual Ptr<Packet> DoDequeue (void);
-// //   virtual Ptr<Packet> DoRemove (void);
-// //   virtual Ptr<const Packet> DoPeek (void) const;
-
-
-//     using Queue<Packet>::GetContainer;
-//     using Queue<Packet>::DoEnqueue;
-//     using Queue<Packet>::DoDequeue;
-//     using Queue<Packet>::DoRemove;
-//     using Queue<Packet>::DoPeek;
-//     using Queue<Packet>::GetNPackets;
-//     using Queue<Packet>::GetTotalReceivedBytes;
-
-
-//   // Classify packets based on UDP ports and place them into two different queues
-//   void Classify (Ptr<Packet> p);
-
-//   // Schedule packets to the outgoing link from Q1
-//   Ptr<Packet> Schedule ();
-
-//   Ptr<DropTailQueue<Packet>> m_queue1;
-//   Ptr<DropTailQueue<Packet>> m_queue2;
-// };
-
-// // NS_OBJECT_ENSURE_REGISTERED (TwoQueues);
-
-// TypeId
-// TwoQueues::GetTypeId ()
-// {
-//   static TypeId tid = TypeId ("TwoQueues")
-//     .SetParent<Queue<Packet>> ()
-//     .SetGroupName ("Network")
-//     .AddConstructor<TwoQueues> ()
-//   ;
-//   return tid;
-// }
-
-// TwoQueues::TwoQueues ()
-// {
-//   m_queue1 = CreateObject<DropTailQueue<Packet>> ();
-//   m_queue2 = CreateObject<DropTailQueue<Packet>> ();
-// }
-
-// TwoQueues::~TwoQueues ()
-// {
-// }
-
-// Ptr<Packet> TwoQueues::Remove (void)
-// {
-//   return Create<Packet> ();
-// }
-
-
-// bool TwoQueues::Enqueue(Ptr<Packet> item)
-// {
-//   return true;
-// }
-
-// Ptr<Packet> TwoQueues::Dequeue()
-// {
-//     Ptr<Packet> item = DoDequeue(GetContainer().begin());
-//     return item;
-// }
-
-// Ptr<const Packet> TwoQueues::Peek() const
-// {
-//     return DoPeek(GetContainer().begin());
-// }
-
-// uint32_t TwoQueues::GetTotalReceivedBytes (void) const
-// {
-//   return m_queue1->GetTotalReceivedBytes () + m_queue2->GetTotalReceivedBytes ();
-// }
-
-// uint32_t TwoQueues::GetNPackets (void) const
-// {
-//   return m_queue1->GetNPackets () + m_queue2->GetNPackets ();
-// }
-
-
-
-// // bool
-// // TwoQueues::DoEnqueue (Ptr<Packet> p)
-// // {
-// //   Classify (p);
-// //   return true;
-// // }
-
-// // Ptr<Packet>
-// // TwoQueues::DoDequeue (void)
-// // {
-// //   return Schedule ();
-// // }
-
-// // Ptr<Packet>
-// // TwoQueues::DoRemove (void)
-// // {
-// //   return 0;
-// // }
-
-// // Ptr<const Packet>
-// // TwoQueues::DoPeek (void) const
-// // {
-// //   return m_queue1->Peek ();
-// // }
-
-// void
-// TwoQueues::Classify (Ptr<Packet> p)
-// {
-//   UdpHeader udpHdr;
-//   p->PeekHeader (udpHdr);
-//   uint16_t port = udpHdr.GetDestinationPort ();
-
-//   if (port == 10000)
-//     {
-//       m_queue1->Enqueue (p);
-//     }
-//   else if (port == 20000)
-//     {
-//       m_queue2->Enqueue (p);
-//     }
-// }
-
-// Ptr<Packet>
-// TwoQueues::Schedule ()
-// {
-//   return m_queue1->Dequeue ();
-// }
-
 NS_LOG_COMPONENT_DEFINE("FirstScriptExample");
 
 int
@@ -193,31 +47,41 @@ main (int argc, char *argv[])
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 
+
   Time::SetResolution (Time::NS);
   LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("TempQueue", LOG_LEVEL_DEBUG);
 
   // Create three nodes
   NodeContainer nodes;
   nodes.Create (3);
+  Ptr<Node> n0 = nodes.Get(0);
+  Ptr<Node> n1 = nodes.Get(1);
+  Ptr<Node> n2 = nodes.Get(2);
+
 
   // Create point-to-point channels and set their parameters
   PointToPointHelper clientToRouter;
   clientToRouter.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
   clientToRouter.SetChannelAttribute ("Delay", StringValue ("20ms"));
-  clientToRouter.SetQueue("ns3::TempQueue", "MaxSize", QueueSizeValue(QueueSize("0p")));
 
   PointToPointHelper routerToServer;
   routerToServer.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   routerToServer.SetChannelAttribute ("Delay", StringValue ("20ms"));
 
   // Install the channels on the nodes
-  NetDeviceContainer devices1 = clientToRouter.Install (nodes.Get (0), nodes.Get (1));
-  NetDeviceContainer devices2 = routerToServer.Install (nodes.Get (1), nodes.Get (2));
+  NetDeviceContainer devices1 = clientToRouter.Install (n0, n1);
+  NetDeviceContainer devices2 = routerToServer.Install (n1, n2);
+
+  // Ptr<Node> middleNode = nodes.Get(1);
+  // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(0)->GetObject<PointToPointNetDevice>();
+  // Ptr<TempQueue<Packet>> myQueue = CreateObject<TempQueue<Packet>>();
+  // middleDevice->SetQueue(myQueue);
 
   // Install the InternetStack on the nodes
   InternetStackHelper stack;
-  stack.Install (nodes);
+  stack.InstallAll();
 
   // Use TrafficControlHelper to install the custom queue on devices1
   TrafficControlHelper tch;
@@ -234,15 +98,13 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer interfaces1 = address1.Assign (devices1);
   Ipv4InterfaceContainer interfaces2 = address2.Assign (devices2);
 
+
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
   // Set up the UdpEchoServer
-  UdpEchoServerHelper echoServer (9);
+  UdpEchoServerHelper echoServer (10000);
 
-  Ptr<TempQueue<Packet>> q = CreateObject<TempQueue<Packet>>();
-  // q->SetMaxSize(1000);
-
-
-
-  ApplicationContainer serverApps = echoServer.Install (nodes.Get (2));
+  ApplicationContainer serverApps = echoServer.Install (n2);
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
 
@@ -257,11 +119,11 @@ main (int argc, char *argv[])
   echoClient2.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
   echoClient2.SetAttribute ("PacketSize", UintegerValue (1024));
 
-  ApplicationContainer clientApps1 = echoClient1.Install (nodes.Get (0));
+  ApplicationContainer clientApps1 = echoClient1.Install (n0);
   clientApps1.Start (Seconds (2.0));
   clientApps1.Stop (Seconds (10.0));
 
-  ApplicationContainer clientApps2 = echoClient2.Install (nodes.Get (0));
+  ApplicationContainer clientApps2 = echoClient2.Install (n0);
   clientApps2.Start (Seconds (2.0));
   clientApps2.Stop (Seconds (10.0));
 

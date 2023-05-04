@@ -69,6 +69,7 @@ template <typename Item>
 TypeId
 DropTailQueue<Item>::GetTypeId()
 {
+    // std::cout << "GetTypeID" << std::endl;
     static TypeId tid =
         TypeId(GetTemplateClassName<DropTailQueue<Item>>())
             .SetParent<Queue<Item>>()
@@ -87,6 +88,8 @@ DropTailQueue<Item>::DropTailQueue()
     : Queue<Item>(),
       NS_LOG_TEMPLATE_DEFINE("DropTailQueue")
 {
+
+    // std::cout << "DropTailQueue Here" << std::endl;
     NS_LOG_FUNCTION(this);
 }
 
@@ -100,6 +103,7 @@ template <typename Item>
 bool
 DropTailQueue<Item>::Enqueue(Ptr<Item> item)
 {
+    // std::cout << "Enqueue Drop TAIL" << std::endl;
     NS_LOG_FUNCTION(this << item);
 
     return DoEnqueue(GetContainer().end(), item);

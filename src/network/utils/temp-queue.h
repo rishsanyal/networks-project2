@@ -27,7 +27,10 @@
 #include "ns3/udp-header.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ethernet-header.h"
+#include "ns3/log.h"
 
+
+// NS_LOG_COMPONENT_DEFINE("TempQueue");
 
 using namespace std;
 
@@ -110,6 +113,7 @@ TempQueue<Item>::TempQueue()
       NS_LOG_TEMPLATE_DEFINE("TempQueue")
 {
     NS_LOG_FUNCTION(this);
+    // NS_LOG_DEBUG("TempQueue " << type(Item) << " created");
     // m_filter = CreateObject<PacketFilter>();
 }
 
@@ -123,39 +127,17 @@ template <typename Item>
 const list<Ptr<Item>>&
 TempQueue<Item>::GetContainer() const
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_DEBUG("GetContainer");
 
     return m_queue1;
 }
-
-
-// template <typename Item>
-// bool
-// TempQueue<Item>::Enqueue(Ptr<Item> item)
-// {
-//     NS_LOG_FUNCTION(this << item);
-
-//     return DoEnqueue(GetContainer().end(), item);
-// }
-
-// template <typename Item>
-// Ptr<Item>
-// TempQueue<Item>::Dequeue()
-// {
-//     NS_LOG_FUNCTION(this);
-
-//     Ptr<Item> item = DoDequeue(GetContainer().begin());
-
-//     NS_LOG_LOGIC("Popped " << item);
-
-//     return item;
-// }
 
 template <typename Item>
 bool
 TempQueue<Item>::Enqueue(Ptr<Item> item)
 {
-    NS_LOG_FUNCTION(this << item);
+    // NS_LOG_FUNCTION(this << item);
+    NS_LOG_DEBUG("Enqueue Item");
 
     Classify(item);
     return true;
@@ -179,7 +161,7 @@ template <typename Item>
 Ptr<Item>
 TempQueue<Item>::Remove()
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_DEBUG("Remove");
 
     Ptr<Item> item = DoRemove();
 
@@ -196,7 +178,7 @@ TempQueue<Item>::DoRemove()
 
     Ptr<Item> item = NULL;
 
-    NS_LOG_LOGIC("Removed " << item);
+    NS_LOG_DEBUG("Removed " << item);
 
     return item;
 }
@@ -214,7 +196,9 @@ template <typename Item>
 Ptr<const Item>
 TempQueue<Item>::DoPeek(void) const
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_DEBUG("DoPeek");
+
+    // NS_LOG_FUNCTION(this);
 
     // if (queue.empty())
     // {
@@ -231,7 +215,7 @@ template <typename Item>
 void
 TempQueue<Item>::Classify(Ptr<Item> item)
 {
-    NS_LOG_FUNCTION(this << item);
+    // cout(this << item);
     // Ptr<Packet> packet = item->GetPacket();
     // UdpHeader udpHeader;
     // packet->PeekHeader(udpHeader);
@@ -246,50 +230,59 @@ TempQueue<Item>::Classify(Ptr<Item> item)
     // }
 
         // Cast the Item to a Packet
-    Ptr<ns3::Packet> packet = ns3::DynamicCast<ns3::Packet>(item);
+    // Ptr<Item> packet = item->Copy();
 
-    if (packet)
+    NS_LOG_DEBUG(typeid(item).name());
+    // NS_LOG_FUNCTION("this " << this << " item " << item << " packet " << packet);
+    NS_LOG_DEBUG("Classify");
+
+    if (item)
     {
+
+        // Ipv4Header *ipv4Hdr;
+        // item->PeekHeader(&ipv4Hdr);
+
+
         // Remove the Ethernet and IP headers
-        ns3::EthernetHeader ethernetHeader;
-        packet->RemoveHeader(ethernetHeader);
+        // ns3::EthernetHeader ethernetHeader;
+        // packet->RemoveHeader(ethernetHeader);
 
-        ns3::Ipv4Header ipv4Header;
-        packet->RemoveHeader(ipv4Header);
+        // ns3::Ipv4Header ipv4Header;
+        // packet->RemoveHeader(ipv4Header);
 
-        // Check the protocol number to ensure it's UDP (17)
-        if (ipv4Header.GetProtocol() == 17)
-        {
-            ns3::UdpHeader udpHeader;
-            packet->PeekHeader(udpHeader);
+        // // Check the protocol number to ensure it's UDP (17)
+        // if (ipv4Header.GetProtocol() == 17)
+        // {
+        //     ns3::UdpHeader udpHeader;
+        //     packet->PeekHeader(udpHeader);
 
-            // Classify based on port number
-            if (udpHeader.GetDestinationPort() == 10000)
-            {
-                DoEnqueue(m_queue1, item);
-            }
-            else if (udpHeader.GetDestinationPort() == 20000)
-            {
-                DoEnqueue(m_queue2, item);
-            }
-            else
-            {
-                NS_LOG_WARN("Unknown UDP destination port: " << udpHeader.GetDestinationPort());
-            }
-        }
-        else
-        {
-            NS_LOG_WARN("Non-UDP packet received");
-        }
+        //     // Classify based on port number
+        //     if (udpHeader.GetDestinationPort() == 10000)
+        //     {
+        //         DoEnqueue(m_queue1, item);
+        //     }
+        //     else if (udpHeader.GetDestinationPort() == 20000)
+        //     {
+        //         DoEnqueue(m_queue2, item);
+        //     }
+        //     else
+        //     {
+        //         NS_LOG_WARN("Unknown UDP destination port: " << udpHeader.GetDestinationPort());
+        //     }
+        // }
+        // else
+        // {
+        //     NS_LOG_WARN("Non-UDP packet received");
+        // }
 
-        // Add the Ethernet and IP headers back
-        packet->AddHeader(ipv4Header);
-        packet->AddHeader(ethernetHeader);
+        // // Add the Ethernet and IP headers back
+        // packet->AddHeader(ipv4Header);
+        // packet->AddHeader(ethernetHeader);
     }
-    else
-    {
-        NS_LOG_WARN("Failed to cast item to Packet");
-    }
+    // else
+    // {
+    //     NS_LOG_WARN("Failed to cast item to Packet");
+    // }
 
 }
 
@@ -297,6 +290,7 @@ template <typename Item>
 Ptr<Item>
 TempQueue<Item>::Schedule()
 {
+    NS_LOG_DEBUG("Schedule");
     Ptr<Item> item = nullptr;
 
     // FCFS scheduling logic
@@ -316,7 +310,7 @@ template <typename Item>
 bool
 TempQueue<Item>::DoEnqueue(Ptr<Item> p)
 {
-    NS_LOG_FUNCTION(this << p);
+    NS_LOG_DEBUG("DoEnqueue");
 
     // if (Queue<Item>::DoEnqueue(p))
     // {
@@ -324,7 +318,6 @@ TempQueue<Item>::DoEnqueue(Ptr<Item> p)
     //     return true;
     // }
 
-    NS_LOG_LOGIC("Dropped " << p);
     return false;
 }
 
@@ -332,7 +325,7 @@ template <typename Item>
 bool
 TempQueue<Item>::DoEnqueue(list<Ptr<Item>> queueList, Ptr<Item> p)
 {
-    NS_LOG_FUNCTION(this << p);
+    NS_LOG_DEBUG("DoEnqueue");
     queueList.push_back(p);
     return true;
 }
@@ -341,7 +334,7 @@ template <typename Item>
 Ptr<Item>
 TempQueue<Item>::DoDequeue(void)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_DEBUG("DoDequeue");
 
     Ptr<Item> item = NULL;
 
@@ -354,6 +347,7 @@ template <typename Item>
 Ptr<Item>
 TempQueue<Item>::DoDequeue(list<Ptr<Item>> queueList)
 {
+    NS_LOG_DEBUG("DoDequeue with list");
     NS_LOG_FUNCTION(this);
 
     if (queueList.empty())
