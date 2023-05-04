@@ -10,13 +10,16 @@ using namespace ns3;
 #define FILTER_ELEMENT_H
 
 
-NS_LOG_COMPONENT_DEFINE("FilterElement");
+// NS_LOG_COMPONENT_DEFINE("FilterElement");
 
-class FilterElement {
+namespace ns3
+{
+class FilterElement : public Object{
 public:
     FilterElement(){};
-    virtual bool match(Ptr<Packet> p) const = 0;
+    bool match(Ptr<Packet> p);
 
 };
+}
 
 #endif
