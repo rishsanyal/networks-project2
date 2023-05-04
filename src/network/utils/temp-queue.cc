@@ -24,6 +24,6 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("TempQueue");
 
 NS_OBJECT_TEMPLATE_CLASS_DEFINE(TempQueue, Packet);
-NS_OBJECT_TEMPLATE_CLASS_DEFINE(TempQueue, QueueDiscItem);
+// NS_OBJECT_TEMPLATE_CLASS_DEFINE(TempQueue, QueueDiscItem);
 
 } // namespace ns3

@@ -19,15 +19,17 @@
 #ifndef TEMPQUEUE_H
 #define TEMPQUEUE_H
 
+#include "ns3/udp-header.h"
 #include "ns3/queue.h"
 #include "ns3/packet.h"
 #include "ns3/command-line.h"
 #include "ns3/packet-filter.h"
 #include "ns3/queue-item.h"
-#include "ns3/udp-header.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/log.h"
+
+#include <typeinfo>
 
 
 // NS_LOG_COMPONENT_DEFINE("TempQueue");
@@ -149,7 +151,10 @@ TempQueue<Item>::Dequeue()
 {
     NS_LOG_FUNCTION(this);
 
-    Ptr<Item> item = Schedule();
+    // Ptr<Item> item = Schedule();
+
+    Ptr<Item> item = m_queue1.front();
+    m_queue1.pop_front();
 
     NS_LOG_LOGIC("Popped " << item);
 
@@ -218,7 +223,12 @@ TempQueue<Item>::Classify(Ptr<Item> item)
     // cout(this << item);
     // Ptr<Packet> packet = item->GetPacket();
     // UdpHeader udpHeader;
-    // packet->PeekHeader(udpHeader);
+    // item->PeekHeader(udpHeader);
+
+    // Ipv4Header ipv4Header;
+    // ipv4Header = item.GetHeader();
+
+    // ipv4Header.GetDestination();
 
     // if (udpHeader.GetDestinationPort() == 10000)
     // {
@@ -226,15 +236,36 @@ TempQueue<Item>::Classify(Ptr<Item> item)
     // }
     // else if (udpHeader.GetDestinationPort() == 20000)
     // {
-    //     DoEnqueue(m_queue2, item);
+    //     // DoEnqueue(m_queue2, item);
+    //     NS_LOG_DEBUG("Ignoring Packet");
     // }
 
         // Cast the Item to a Packet
     // Ptr<Item> packet = item->Copy();
 
     NS_LOG_DEBUG(typeid(item).name());
-    // NS_LOG_FUNCTION("this " << this << " item " << item << " packet " << packet);
-    NS_LOG_DEBUG("Classify");
+    // const char* MY_STRING = "N3ns33PtrINS_6PacketEEE";
+    // if (strcmp(typeid(item).name(), MY_STRING) == 0){
+    //     NS_LOG_DEBUG("Packet");
+
+    //     UdpHeader udpHeader;
+    //     item->PeekHeader(udpHeader);
+
+    //     // if (udpHeader.GetDestinationPort() == 10000)
+    //     // {
+    //     //     DoEnqueue(m_queue1, item);
+    //     // }
+    //     // else if (udpHeader.GetDestinationPort() == 20000)
+    //     // {
+    //     //     // DoEnqueue(m_queue2, item);
+    //     //     NS_LOG_DEBUG("Ignoring Packet");
+    //     // }
+    // }
+    // else{
+    //     NS_LOG_DEBUG("Unknown type " << typeid(item).name() << "|" << endl);
+    // }
+    // // NS_LOG_FUNCTION("this " << this << " item " << item << " packet " << packet);
+    // NS_LOG_DEBUG("Classify");
 
     if (item)
     {
@@ -369,7 +400,7 @@ TempQueue<Item>::DoDequeue(list<Ptr<Item>> queueList)
 // NS_OBJECT_TEMPLATE_CLASS_DEFINE (TempQueue,QueueDiscItem), which are included
 // in drop-tail-queue.cc
 extern template class TempQueue<Packet>;
-extern template class TempQueue<QueueDiscItem>;
+// extern template class TempQueue<QueueDiscItem>;
 
 } // namespace ns3
 

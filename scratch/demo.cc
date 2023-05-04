@@ -23,6 +23,8 @@
 #include "ns3/applications-module.h"
 #include "ns3/flow-monitor-helper.h"
 // #include "ns3/drop-tail-queue.h"
+#include "ns3/udp-header.h"
+#include "twoQueue.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -75,8 +77,8 @@ main (int argc, char *argv[])
   NetDeviceContainer devices2 = routerToServer.Install (n1, n2);
 
   // Ptr<Node> middleNode = nodes.Get(1);
-  // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(0)->GetObject<PointToPointNetDevice>();
-  // Ptr<TempQueue<Packet>> myQueue = CreateObject<TempQueue<Packet>>();
+  // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  // Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
   // middleDevice->SetQueue(myQueue);
 
   // Install the InternetStack on the nodes
@@ -98,8 +100,12 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer interfaces1 = address1.Assign (devices1);
   Ipv4InterfaceContainer interfaces2 = address2.Assign (devices2);
 
-
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
+  Ptr<Node> middleNode = n1;
+  Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
+  middleDevice->SetQueue(myQueue);
 
   // Set up the UdpEchoServer
   UdpEchoServerHelper echoServer (10000);

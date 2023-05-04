@@ -7,6 +7,7 @@
 #include "ns3/applications-module.h"
 #include "ns3/queue.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/udp-header.h"
 
 using namespace ns3;
 
@@ -41,13 +42,13 @@ private:
     using Queue<Packet>::DoPeek;
 
   // Classify packets based on UDP ports and place them into two different queues
-  void Classify (Ptr<Packet> p);
+  // void Classify (Ptr<Packet> p);
 
   // Schedule packets to the outgoing link from Q1
-  Ptr<Packet> Schedule ();
+  // Ptr<Packet> Schedule ();
 
-  Ptr<DropTailQueue<Packet>> m_queue1;
-  Ptr<DropTailQueue<Packet>> m_queue2;
+  list<Ptr<Packet>> m_queue1;
+  list<Ptr<Packet>> m_queue2;
 };
 
 // NS_OBJECT_ENSURE_REGISTERED (TwoQueues);
@@ -65,8 +66,8 @@ TwoQueues::GetTypeId ()
 
 TwoQueues::TwoQueues ()
 {
-  m_queue1 = CreateObject<DropTailQueue<Packet>> ();
-  m_queue2 = CreateObject<DropTailQueue<Packet>> ();
+  m_queue1 = list<Ptr<Packet>> ();
+  m_queue2 = list<Ptr<Packet>> ();
 }
 
 TwoQueues::~TwoQueues ()
@@ -81,70 +82,76 @@ Ptr<Packet> TwoQueues::Remove (void)
 
 bool TwoQueues::Enqueue(Ptr<Packet> item)
 {
+  // std::cout << "Enqueue" << std::endl;
+  UdpHeader udpHdr;
+  item->PeekHeader(udpHdr);
+
+  // int srcPort = udpHdr.GetSourcePort();
+  // int port = udpHdr.GetDestinationPort();
+
+  udpHdr.Print(std::cout);
+
+
+
+
+  m_queue1.push_back (item);
+
+  // std::cout << "Dest Port: " << port << std::endl;
+  // std::cout << "Source Port: " << srcPort << std::endl;
+
+  // if (port == 10000)
+  //   {
+  //     std::cout << "First Queue" << std::endl;
+  //     // m_queue1.push_back (item);
+  //   }
+  // else if (port == 20000)
+  //   {
+  //     std::cout << "Second Queue" << std::endl;
+  //   }
   return true;
 }
 
 Ptr<Packet> TwoQueues::Dequeue()
 {
-    Ptr<Packet> item = DoDequeue(GetContainer().begin());
-    return item;
+    // Ptr<Packet> item = DoDequeue(GetContainer().begin());
+
+    Ptr<Packet> retItem = m_queue1.front();
+
+    m_queue1.pop_front();
+
+    return retItem;
 }
 
 Ptr<const Packet> TwoQueues::Peek() const
 {
-    return DoPeek(GetContainer().begin());
+  std::cout << "Peek" << std::endl;
+  return DoPeek(GetContainer().begin());
 }
 
-
-// bool
-// TwoQueues::DoEnqueue (Ptr<Packet> p)
+// void
+// TwoQueues::Classify (Ptr<Packet> p)
 // {
-//   Classify (p);
-//   return true;
+//   UdpHeader udpHdr;
+//   p->PeekHeader (udpHdr);
+//   uint16_t port = udpHdr.GetDestinationPort ();
+
+//   std::cout << port << std::endl;
+
+//   // if (port == 10000)
+//   //   {
+//   //     m_queue1->Enqueue (p);
+//   //   }
+//   // else if (port == 20000)
+//   //   {
+//   //     m_queue2->Enqueue (p);
+//   //   }
 // }
 
 // Ptr<Packet>
-// TwoQueues::DoDequeue (void)
+// TwoQueues::Schedule ()
 // {
-//   return Schedule ();
-// }
+//   std::cout << "Schedule" << std::endl;
+//   // return m_queue1->Dequeue ();
 
-// Ptr<Packet>
-// TwoQueues::DoRemove (void)
-// {
-//   return 0;
-// }
-
-// Ptr<const Packet>
-// TwoQueues::DoPeek (void) const
-// {
-//   return m_queue1->Peek ();
-// }
-
-void
-TwoQueues::Classify (Ptr<Packet> p)
-{
-  UdpHeader udpHdr;
-  p->PeekHeader (udpHdr);
-  uint16_t port = udpHdr.GetDestinationPort ();
-
-  if (port == 10000)
-    {
-      m_queue1->Enqueue (p);
-    }
-  else if (port == 20000)
-    {
-      m_queue2->Enqueue (p);
-    }
-}
-
-Ptr<Packet>
-TwoQueues::Schedule ()
-{
-  return m_queue1->Dequeue ();
-}
-
-
-// namespace ns3 {
-//   NS_OBJECT_TEMPLATE_CLASS_DEFINE(TwoQueues, Packet);
+//   return NULL;
 // }
