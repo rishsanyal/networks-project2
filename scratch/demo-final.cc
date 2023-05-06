@@ -29,6 +29,8 @@
 
 #include"source-ip-address.cc"
 #include"filter-container.cc"
+#include"source-mask.cc"
+#include"source-port-number.cc"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -51,9 +53,7 @@ void testSourceIPAdress(Ptr<Packet> p1){
     UdpHeader udpHeader;
     udpHeader.SetSourcePort(1234);
     udpHeader.SetDestinationPort(5678);
-
     p1->AddHeader(udpHeader);
-
 
     ns3::Ipv4Header ipv4Header;
     ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
@@ -64,10 +64,52 @@ void testSourceIPAdress(Ptr<Packet> p1){
     SourceIPAddress *f1 = new SourceIPAddress();
     f1->setValue(Ipv4Address("10.0.1.1"));
 
+    std::cout << "testSourceIPAdress: ";
+    std::cout << (f1->match(p1) == false) << std::endl;
+}
+
+void testSourcePortNumber(Ptr<Packet> p1){
+
+    ns3::Ipv4Header ipv4Header;
+    ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
+    ipv4Header.SetDestination(ns3::Ipv4Address("10.0.0.2")); // Set the destination IP address
+
+    p1->AddHeader(ipv4Header);
+
+    UdpHeader udpHeader;
+    udpHeader.SetSourcePort(1234);
+    udpHeader.SetDestinationPort(5678);
+    p1->AddHeader(udpHeader);
+
+    SourcePortNumber *f1 = new SourcePortNumber();
+    f1->setValue(1234);
 
     std::cout << "testSourceIPAdress: ";
-    std::cout << (f1->match(p1) == 0) << std::endl;
+    std::cout << (f1->match(p1) == true) << std::endl;
 }
+
+
+// void testSourceMask(Ptr<Packet> p1){
+//     UdpHeader udpHeader;
+//     udpHeader.SetSourcePort(1234);
+//     udpHeader.SetDestinationPort(5678);
+//     p1->AddHeader(udpHeader);
+
+//     // const char* mask = "/100";
+//     // Ipv4Mask ipv4mask = Ipv4Mask(mask);
+//     // Ipv4Mask ipMask = Ipv4Mask("255.255.255.0");
+//     Ipv4Header ipv4Header;
+//     ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1/100")); // Set the source IP address
+//     ipv4Header.SetDestination(ns3::Ipv4Address("10.0.0.2/400")); // Set the destination IP address
+
+//     p1->AddHeader(ipv4Header);
+
+//     SourceMask *f1 = new SourceMask();
+//     f1->setValue(Ipv4Mask(300));
+
+//     std::cout << "testSourceMask: ";
+//     std::cout << (f1->match(p1) == false) << std::endl;
+// }
 
 void testFilterFail(Ptr<Packet> p1){
     UdpHeader udpHeader;
@@ -145,6 +187,8 @@ int main (int argc, char *argv[])
     testSourceIPAdress(p1);
     testFilterFail(Create<Packet> (100));
     testFilterPass(Create<Packet> (100));
+    testSourcePortNumber(Create<Packet> (100));
+    // testSourceMask(Create<Packet> (100));
 
   return 0;
 }

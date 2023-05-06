@@ -8,14 +8,13 @@ using namespace ns3;
 using namespace std;
 
 class SourceIPAddress : public FilterElement {
-public:
+    public:
+        SourceIPAddress();
+        void setValue(Ipv4Address value);
+        bool match(Ptr<Packet> p) override;
 
-    SourceIPAddress();
-    void setValue(Ipv4Address value);
-    bool match(Ptr<Packet> p) override;
-
-private:
-        Ipv4Address value;
+    private:
+            Ipv4Address value;
 
 };
 

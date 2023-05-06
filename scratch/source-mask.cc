@@ -17,12 +17,18 @@ class SourceMask: public FilterElement {
             this->value = value;
         }
 
-        bool match(Ptr<Packet>& p) {
+        bool match(Ptr<Packet> p) override{
             Ipv4Header header;
             p->PeekHeader(header);
 
+
             uint32_t prefixLen = value.GetPrefixLength();
             Ipv4Mask mask = Ipv4Mask((Ipv4Mask::GetOnes().Get() << (32 - prefixLen)));
+
+
+            cout << "Here" << endl;
+            cout << (header.GetSource().Get() && value.Get()) << endl;
+            cout << "Here" << endl;
 
             if((header.GetSource().Get() & mask.Get()) == (value.Get() & mask.Get())){
                 return true;
@@ -30,6 +36,6 @@ class SourceMask: public FilterElement {
                 return false;
             }
 
-            return true;
+            return false;
         }
 };
