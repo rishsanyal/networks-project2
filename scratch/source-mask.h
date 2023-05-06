@@ -2,20 +2,21 @@
 #define SOURCE_MASK_H
 
 #include "ns3/core-module.h"
-#include "ns3/queue.h"
 #include "filter-element.h"
 
 using namespace ns3;
-using namespace std; 
+using namespace std;
 
-class SourceMask: public FilterElement {
+class SourceMask : public FilterElement {
 public:
-    SourceMask(){ }
 
-    bool match(Ptr<Packet> p) {}
+    SourceMask();
+    void setValue(Ipv4Mask value);
+    bool match(Ptr<Packet> p) override;
 
 private:
-    Ipv4Mask value;
+        Ipv4Mask value;
+
 };
 
 #endif
