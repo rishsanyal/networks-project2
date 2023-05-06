@@ -24,7 +24,7 @@
 #include "ns3/flow-monitor-helper.h"
 // #include "ns3/drop-tail-queue.h"
 #include "ns3/udp-header.h"
-#include "ns3/new-queue.h"
+// #include "ns3/new-queue.h"
 #include "twoQueue.h"
 
 // #include "src/network/utils/temp-queue.h"
@@ -89,10 +89,10 @@ main (int argc, char *argv[])
   // Ptr<TempQueue<Packet>> myQueue = CreateObject<TempQueue<Packet>>();
   // Ptr<PointToPointNetDevice> device = n1->GetDevice(0)->GetObject<PointToPointNetDevice>();
 
-  Ptr<Node> middleNode = nodes.Get(1);
-  Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
-  middleDevice->SetQueue(myQueue);
+  // Ptr<Node> middleNode = nodes.Get(1);
+  // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  // Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
+  // middleDevice->SetQueue(myQueue);
 
   // Install the InternetStack on the nodes
   InternetStackHelper stack;

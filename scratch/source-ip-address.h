@@ -10,13 +10,13 @@ using namespace std;
 class SourceIPAddress : public FilterElement {
 public:
 
-    SourceIPAddress() { }
-
-    bool match(Ptr<Packet>& p) {}
+    SourceIPAddress();
+    void setValue(Ipv4Address value);
+    bool match(Ptr<Packet> p) override;
 
 private:
         Ipv4Address value;
-        
+
 };
 
 #endif
