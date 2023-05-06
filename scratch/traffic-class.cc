@@ -3,14 +3,14 @@
 #include <queue>
 
 #include "ns3/packet.h"
-#include "filter.h"
+// #include "filter-container.cc"
 
 using namespace ns3;
 using namespace std;
 
 class TrafficClass{
     private:
-        uint32_t bytes;
+        uint32_t bytes = 0;
         uint32_t packets = 0;
         uint32_t maxPackets;
         uint32_t maxBytes;
@@ -20,7 +20,7 @@ class TrafficClass{
         queue<Ptr<Packet>> m_queue;
 
     public:
-        vector<Filter*> filters;
+        vector<FilterContainer*> filters;
 
         TrafficClass(uint32_t maxPackets, uint32_t maxBytes, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false){
             this->maxPackets = maxPackets;
@@ -52,8 +52,8 @@ class TrafficClass{
         }
 
         bool Match(Ptr<Packet> p) const{
-            for (Filter* f : this->filters){
-                if (f->Match(p)){
+            for (FilterContainer* f : this->filters){
+                if (f->match(p)){
                     return true;
                 }
             }
