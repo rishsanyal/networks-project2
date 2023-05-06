@@ -9,13 +9,12 @@ using namespace ns3;
 using namespace std;
 
 class DestinationPortNumber: public FilterElement {
-public:
-    DestinationPortNumber() {}
-
-    bool match(Ptr<Packet> p) { }
-
-private:
-    uint32_t value;
+    public:
+        DestinationPortNumber();
+        void setValue(Ipv4Address value);
+        bool match(Ptr<Packet> p) override;
+    private:
+        uint32_t value;
 };
 
 #endif

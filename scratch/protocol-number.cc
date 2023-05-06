@@ -9,17 +9,21 @@ class ProtocolNumber : public FilterElement {
     private:
         uint32_t value;
     public:
-            
-        ProtocolNumber() { }
+        ProtocolNumber() {}
 
-        bool match(Ptr<Packet>& p) {
+        void setValue(uint32_t value){
+            this->value = value;
+        }
+
+        bool match(Ptr<Packet> p) override{
             Ipv4Header header;
             p->PeekHeader(header);
 
-            if(header.GetProtocol()==value){
+            if(header.GetProtocol() == value){
+                // 1
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         }
 };

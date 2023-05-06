@@ -122,11 +122,6 @@ main(int argc, char* argv[])
     csma.SetChannelAttribute("Delay", StringValue("2ms"));
     NetDeviceContainer d2345 = csma.Install(n2345);
 
-    Ptr<Node> middleNode = c.Get(2);
-    Ptr<PointToPointNetDevice> middleDevice = c.Get(2)->GetDevice(1)->GetObject<PointToPointNetDevice>();
-    Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
-    middleDevice->SetQueue(myQueue);
-
     // Later, we add IP addresses.
     NS_LOG_INFO("Assign IP Addresses.");
     Ipv4AddressHelper ipv4;

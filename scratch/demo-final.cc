@@ -32,6 +32,8 @@
 #include"source-mask.cc"
 #include"source-port-number.cc"
 #include "traffic-class.cc"
+#include"destination-port-number.cc"
+#include"protocol-number.cc"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -86,6 +88,44 @@ void testSourcePortNumber(Ptr<Packet> p1){
     f1->setValue(1234);
 
     std::cout << "testSourceIPAdress: ";
+    std::cout << (f1->match(p1) == true) << std::endl;
+}
+
+void testDestinationPortNumber(Ptr<Packet> p1){
+
+    ns3::Ipv4Header ipv4Header;
+    ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
+    ipv4Header.SetDestination(ns3::Ipv4Address("10.0.0.2")); // Set the destination IP address
+
+    p1->AddHeader(ipv4Header);
+
+    UdpHeader udpHeader;
+    udpHeader.SetSourcePort(1234);
+    udpHeader.SetDestinationPort(5678);
+    p1->AddHeader(udpHeader);
+
+    DestinationPortNumber *f1 = new DestinationPortNumber();
+    f1->setValue(5678);
+
+    std::cout << "testDestinationIPAdress: ";
+    std::cout << (f1->match(p1) == true) << std::endl;
+}
+
+void testProtocolNumber(Ptr<Packet> p1){
+
+    ns3::Ipv4Header ipv4Header;
+    ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
+    ipv4Header.SetDestination(ns3::Ipv4Address("10.0.0.2")); // Set the destination IP address
+    ipv4Header.SetProtocol(8);
+
+    p1->AddHeader(ipv4Header);
+
+    // Problem caused when we set UDPHeader after IPv4Header
+
+    ProtocolNumber *f1 = new ProtocolNumber();
+    f1->setValue(8);
+
+    std::cout << "testProtocolNumber: ";
     std::cout << (f1->match(p1) == true) << std::endl;
 }
 
@@ -254,6 +294,8 @@ int main (int argc, char *argv[])
     testFilterFail(Create<Packet> (100));
     testFilterPass(Create<Packet> (100));
     testSourcePortNumber(Create<Packet> (100));
+    testDestinationPortNumber(Create<Packet> (100));
+    testProtocolNumber(Create<Packet> (100));
     // testSourceMask(Create<Packet> (100));
     TestTCPass(Create<Packet> (100));
 

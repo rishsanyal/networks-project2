@@ -9,14 +9,13 @@ using namespace ns3;
 using namespace std;
 
 class ProtocolNumber : public FilterElement {
-public:
+    public:
+        ProtocolNumber();
+        void setValue(uint32_t value);
+        bool match(Ptr<Packet> p) override;
 
-    ProtocolNumber() { }
-
-    bool match(Ptr<Packet> p) { }
-
-private:
-    uint32_t value;
+    private:
+            uint32_t value;
 
 };
 

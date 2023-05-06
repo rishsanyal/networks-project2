@@ -8,18 +8,29 @@ using namespace std;
 
 class DestinationPortNumber: public FilterElement {
     private:
-        uint32_t value;
+            uint32_t value;
     public:
-    
-        DestinationPortNumber() { }
 
-        bool match(Ptr<Packet>& p) {
+        DestinationPortNumber() {}
+
+        void setValue(uint32_t value){
+            this->value = value;
+        }
+
+        bool match(Ptr<Packet> p) {
+            Ipv4Header header;
+            p->PeekHeader(header);
+
             UdpHeader udpHeader;
             p->PeekHeader(udpHeader);
-            if(udpHeader.GetDestinationPort() == value) {
+
+            Ptr<Packet> C_Packet = p->Copy();
+            C_Packet->RemoveHeader(udpHeader);
+
+            if(udpHeader.GetDestinationPort() == value){
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         }
 };
