@@ -67,6 +67,7 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/network-module.h"
 #include "ns3/point-to-point-module.h"
+#include "ns3/new-queue.h"
 
 #include <cassert>
 #include <fstream>
@@ -120,6 +121,11 @@ main(int argc, char* argv[])
     csma.SetChannelAttribute("DataRate", StringValue("5Mbps"));
     csma.SetChannelAttribute("Delay", StringValue("2ms"));
     NetDeviceContainer d2345 = csma.Install(n2345);
+
+    Ptr<Node> middleNode = c.Get(2);
+    Ptr<PointToPointNetDevice> middleDevice = c.Get(2)->GetDevice(1)->GetObject<PointToPointNetDevice>();
+    Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
+    middleDevice->SetQueue(myQueue);
 
     // Later, we add IP addresses.
     NS_LOG_INFO("Assign IP Addresses.");

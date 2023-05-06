@@ -82,7 +82,7 @@ Ptr<Packet> TwoQueues::Remove (void)
 
 bool TwoQueues::Enqueue(Ptr<Packet> item)
 {
-  // std::cout << "Enqueue" << std::endl;
+  std::cout << "Enqueue" << std::endl;
   UdpHeader udpHdr;
   item->PeekHeader(udpHdr);
 
@@ -90,9 +90,6 @@ bool TwoQueues::Enqueue(Ptr<Packet> item)
   // int port = udpHdr.GetDestinationPort();
 
   udpHdr.Print(std::cout);
-
-
-
 
   m_queue1.push_back (item);
 

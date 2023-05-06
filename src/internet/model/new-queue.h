@@ -16,9 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TEMPQUEUE_H
-#define TEMPQUEUE_H
+#ifndef NEWTEMPQUEUE_H
+#define NEWTEMPQUEUE_H
 
+#include "ns3/tcp-header.h"
 #include "ns3/udp-header.h"
 #include "ns3/queue.h"
 #include "ns3/packet.h"
@@ -32,14 +33,14 @@
 #include <typeinfo>
 
 
-// NS_LOG_COMPONENT_DEFINE("TempQueue");
+// NS_LOG_COMPONENT_DEFINE("NewTempQueue");
 
 using namespace std;
 
 namespace ns3
 {
 
-    class UDPHeader;
+    // class UDPHeader;
 
 /**
  * \ingroup queue
@@ -47,13 +48,13 @@ namespace ns3
  * \brief A FIFO packet queue that drops tail-end packets on overflow
  */
 template <typename Item>
-class TempQueue : public Queue<Item>
+class NewTempQueue : public Queue<Item>
 {
 public:
     static TypeId GetTypeId();
 
-    TempQueue();
-    ~TempQueue() override;
+    NewTempQueue();
+    ~NewTempQueue() override;
 
     bool Enqueue(Ptr<Item> item) override;
     Ptr<Item> Dequeue() override;
@@ -96,13 +97,13 @@ private:
  */
 
 template <typename Item>
-TypeId TempQueue<Item>::GetTypeId()
+TypeId NewTempQueue<Item>::GetTypeId()
 {
     static TypeId tid =
-        TypeId(GetTemplateClassName<TempQueue<Item>>())
+        TypeId(GetTemplateClassName<NewTempQueue<Item>>())
             .SetParent<Queue<Item>>()
             .SetGroupName("Network")
-            .template AddConstructor<TempQueue<Item>>()
+            .template AddConstructor<NewTempQueue<Item>>()
             .AddAttribute("MaxSize",
                           "The max queue size",
                           QueueSizeValue(QueueSize("100p")),
@@ -112,24 +113,24 @@ TypeId TempQueue<Item>::GetTypeId()
 }
 
 template <typename Item>
-TempQueue<Item>::TempQueue()
+NewTempQueue<Item>::NewTempQueue()
     : Queue<Item>(),
-      NS_LOG_TEMPLATE_DEFINE("TempQueue")
+      NS_LOG_TEMPLATE_DEFINE("NewTempQueue")
 {
     NS_LOG_FUNCTION(this);
-    // NS_LOG_DEBUG("TempQueue " << type(Item) << " created");
+    // NS_LOG_DEBUG("NewTempQueue " << type(Item) << " created");
     // m_filter = CreateObject<PacketFilter>();
 }
 
 template <typename Item>
-TempQueue<Item>::~TempQueue()
+NewTempQueue<Item>::~NewTempQueue()
 {
     NS_LOG_FUNCTION(this);
 }
 
 template <typename Item>
 const list<Ptr<Item>>&
-TempQueue<Item>::GetContainer() const
+NewTempQueue<Item>::GetContainer() const
 {
     NS_LOG_DEBUG("GetContainer");
 
@@ -138,20 +139,53 @@ TempQueue<Item>::GetContainer() const
 
 template <typename Item>
 bool
-TempQueue<Item>::Enqueue(Ptr<Item> item)
+NewTempQueue<Item>::Enqueue(Ptr<Item> item)
 {
     // NS_LOG_FUNCTION(this << item);
     // NS_LOG_DEBUG("Enqueue Item");
 
-    cout << "Enqueue Item" << endl;
+    cout << "Enqueue Item NewTempQueue  Item" << endl;
 
     Classify(item);
     return true;
 }
 
+template <>
+bool
+NewTempQueue<Packet>::Enqueue(Ptr<Packet> item)
+{
+    // NS_LOG_FUNCTION(this << item);
+    // NS_LOG_DEBUG("Enqueue Item");
+
+    cout << "Enqueue Item NewTempQueue Packet" << endl;
+
+    UdpHeader udpHeader;
+
+    Ipv4Header ipHeader;
+    TcpHeader tcpHeader;
+
+    if (item != NULL) {
+        item->PeekHeader(ipHeader);
+        item->PeekHeader(tcpHeader);
+        item->PeekHeader(udpHeader);
+    }
+
+    cout << "ipHeader.GetProtocol() " << ipHeader.GetProtocol() << endl;
+    cout << "tcpHeader.GetDestinationPort() " << tcpHeader.GetDestinationPort() << endl;
+    cout << "tcpHeader.GetSourcePort() " << tcpHeader.GetSourcePort() << endl;
+
+    cout << "udpHeader.GetDestinationPort() " << udpHeader.GetDestinationPort() << endl;
+    cout << "udpHeader.GetSourcePort() " << udpHeader.GetSourcePort() << endl;
+
+    // udpHeader.Print(cout);
+
+    // Classify(item);
+    return true;
+}
+
 template <typename Item>
 Ptr<Item>
-TempQueue<Item>::Dequeue()
+NewTempQueue<Item>::Dequeue()
 {
     NS_LOG_FUNCTION(this);
 
@@ -168,7 +202,7 @@ TempQueue<Item>::Dequeue()
 
 template <typename Item>
 Ptr<Item>
-TempQueue<Item>::Remove()
+NewTempQueue<Item>::Remove()
 {
     NS_LOG_DEBUG("Remove");
 
@@ -181,7 +215,7 @@ TempQueue<Item>::Remove()
 
 template <typename Item>
 Ptr<Item>
-TempQueue<Item>::DoRemove()
+NewTempQueue<Item>::DoRemove()
 {
     NS_LOG_FUNCTION(this);
 
@@ -194,7 +228,7 @@ TempQueue<Item>::DoRemove()
 
 template <typename Item>
 Ptr<const Item>
-TempQueue<Item>::Peek() const
+NewTempQueue<Item>::Peek() const
 {
     NS_LOG_FUNCTION(this);
 
@@ -203,7 +237,7 @@ TempQueue<Item>::Peek() const
 
 template <typename Item>
 Ptr<const Item>
-TempQueue<Item>::DoPeek(void) const
+NewTempQueue<Item>::DoPeek(void) const
 {
     NS_LOG_DEBUG("DoPeek");
 
@@ -222,7 +256,7 @@ TempQueue<Item>::DoPeek(void) const
 
 template <typename Item>
 void
-TempQueue<Item>::Classify(Ptr<Item> item)
+NewTempQueue<Item>::Classify(Ptr<Item> item)
 {
     // cout(this << item);
     // Ptr<Packet> packet = item->GetPacket();
@@ -323,7 +357,7 @@ TempQueue<Item>::Classify(Ptr<Item> item)
 
 template <>
 void
-TempQueue<Packet>::Classify(Ptr<Packet> item)
+NewTempQueue<Packet>::Classify(Ptr<Packet> item)
 {
     // UdpHeader udpHeader;
     // item->PeekHeader(udpHeader);
@@ -338,7 +372,7 @@ TempQueue<Packet>::Classify(Ptr<Packet> item)
 
 template <typename Item>
 Ptr<Item>
-TempQueue<Item>::Schedule()
+NewTempQueue<Item>::Schedule()
 {
     NS_LOG_DEBUG("Schedule");
     Ptr<Item> item = nullptr;
@@ -358,7 +392,7 @@ TempQueue<Item>::Schedule()
 
 template <typename Item>
 bool
-TempQueue<Item>::DoEnqueue(Ptr<Item> p)
+NewTempQueue<Item>::DoEnqueue(Ptr<Item> p)
 {
     NS_LOG_DEBUG("DoEnqueue");
 
@@ -373,7 +407,7 @@ TempQueue<Item>::DoEnqueue(Ptr<Item> p)
 
 template <typename Item>
 bool
-TempQueue<Item>::DoEnqueue(list<Ptr<Item>> queueList, Ptr<Item> p)
+NewTempQueue<Item>::DoEnqueue(list<Ptr<Item>> queueList, Ptr<Item> p)
 {
     NS_LOG_DEBUG("DoEnqueue");
     queueList.push_back(p);
@@ -382,7 +416,7 @@ TempQueue<Item>::DoEnqueue(list<Ptr<Item>> queueList, Ptr<Item> p)
 
 template <typename Item>
 Ptr<Item>
-TempQueue<Item>::DoDequeue(void)
+NewTempQueue<Item>::DoDequeue(void)
 {
     NS_LOG_DEBUG("DoDequeue");
 
@@ -395,7 +429,7 @@ TempQueue<Item>::DoDequeue(void)
 
 template <typename Item>
 Ptr<Item>
-TempQueue<Item>::DoDequeue(list<Ptr<Item>> queueList)
+NewTempQueue<Item>::DoDequeue(list<Ptr<Item>> queueList)
 {
     NS_LOG_DEBUG("DoDequeue with list");
     NS_LOG_FUNCTION(this);
@@ -413,14 +447,14 @@ TempQueue<Item>::DoDequeue(list<Ptr<Item>> queueList)
 
 // The following explicit template instantiation declarations prevent all the
 // translation units including this header file to implicitly instantiate the
-// TempQueue<Item> class and the TempQueue<QueueDiscItem> class. The
+// NewTempQueue<Item> class and the NewTempQueue<QueueDiscItem> class. The
 // unique instances of these classes are explicitly created through the macros
-// NS_OBJECT_TEMPLATE_CLASS_DEFINE (TempQueue,Item) and
-// NS_OBJECT_TEMPLATE_CLASS_DEFINE (TempQueue,QueueDiscItem), which are included
+// NS_OBJECT_TEMPLATE_CLASS_DEFINE (NewTempQueue,Item) and
+// NS_OBJECT_TEMPLATE_CLASS_DEFINE (NewTempQueue,QueueDiscItem), which are included
 // in drop-tail-queue.cc
-extern template class TempQueue<Packet>;
-extern template class TempQueue<QueueDiscItem>;
+extern template class NewTempQueue<Packet>;
+extern template class NewTempQueue<QueueDiscItem>;
 
 } // namespace ns3
 
-#endif /* TEMPQUEUE_H */
+#endif /* NEWTEMPQUEUE_H */

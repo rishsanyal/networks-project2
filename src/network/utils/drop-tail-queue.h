@@ -19,9 +19,13 @@
 #define DROPTAIL_H
 
 #include "ns3/queue.h"
+#include "ns3/udp-header.h"
 
 namespace ns3
 {
+
+
+  class UdpHeader;
 
 /**
  * \ingroup queue
@@ -31,6 +35,7 @@ namespace ns3
 template <typename Item>
 class DropTailQueue : public Queue<Item>
 {
+
   public:
     /**
      * \brief Get the type ID.
@@ -104,10 +109,40 @@ bool
 DropTailQueue<Item>::Enqueue(Ptr<Item> item)
 {
     // std::cout << "Enqueue Drop TAIL" << std::endl;
+
+    // UdpHeader udpHeader;
+    // item->PeekHeader(udpHeader);
+
+    // udpHeader.Print(std::cout);
+
+    // if (base) {
+    //     base->method();
+    // }
+
     NS_LOG_FUNCTION(this << item);
 
     return DoEnqueue(GetContainer().end(), item);
 }
+
+// template <>
+// bool
+// DropTailQueue<Packet>::Enqueue(Ptr<Packet> item)
+// {
+//     std::cout << "Enqueue Drop TAIL" << std::endl;
+
+//     UdpHeader udpHeader;
+//     item->PeekHeader(udpHeader);
+
+//     udpHeader.Print(std::cout);
+
+//     // if (base) {
+//     //     base->method();
+//     // }
+
+//     NS_LOG_FUNCTION(this << item);
+
+//     return DoEnqueue(GetContainer().end(), item);
+// }
 
 template <typename Item>
 Ptr<Item>

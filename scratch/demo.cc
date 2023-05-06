@@ -24,6 +24,7 @@
 #include "ns3/flow-monitor-helper.h"
 // #include "ns3/drop-tail-queue.h"
 #include "ns3/udp-header.h"
+#include "ns3/new-queue.h"
 #include "twoQueue.h"
 
 // #include "src/network/utils/temp-queue.h"
@@ -62,7 +63,6 @@ main (int argc, char *argv[])
   Ptr<Node> n1 = nodes.Get(1);
   Ptr<Node> n2 = nodes.Get(2);
 
-
   // Create point-to-point channels and set their parameters
   PointToPointHelper clientToRouter;
   clientToRouter.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
@@ -71,22 +71,35 @@ main (int argc, char *argv[])
   PointToPointHelper routerToServer;
   routerToServer.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   routerToServer.SetChannelAttribute ("Delay", StringValue ("20ms"));
+  // routerToServer.SetQueue("TwoQueues");
+
+
+  // Ptr<PointToPointNetDevice> p2pDev = CreateObject<PointToPointNetDevice> ();
+  // p2pDev->SetQueue (CreateObject<TwoQueues> ());
+  // n1->AddDevice (p2pDev);
+
+  // Ptr<SimpleNetDevice> p2pDev = CreateObject<SimpleNetDevice> ();
+  // p2pDev->SetQueue (CreateObject<TwoQueues> ());
+  // n1->GetDevice(1)-> (p2pDev);
 
   // Install the channels on the nodes
   NetDeviceContainer devices1 = clientToRouter.Install (n0, n1);
   NetDeviceContainer devices2 = routerToServer.Install (n1, n2);
 
-  // Ptr<Node> middleNode = nodes.Get(1);
-  // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  // Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
-  // middleDevice->SetQueue(myQueue);
+  // Ptr<TempQueue<Packet>> myQueue = CreateObject<TempQueue<Packet>>();
+  // Ptr<PointToPointNetDevice> device = n1->GetDevice(0)->GetObject<PointToPointNetDevice>();
+
+  Ptr<Node> middleNode = nodes.Get(1);
+  Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
+  middleDevice->SetQueue(myQueue);
 
   // Install the InternetStack on the nodes
   InternetStackHelper stack;
   stack.InstallAll();
 
   // Use TrafficControlHelper to install the custom queue on devices1
-  TrafficControlHelper tch;
+  // TrafficControlHelper tch;
   // tch.SetRootQueueDisc ("TwoQueues");
   // tch.Install (devices1);
 
@@ -102,10 +115,18 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  Ptr<Node> middleNode = n1;
-  Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
-  middleDevice->SetQueue(myQueue);
+  // Address addy = n2->GetDevice(1)->GetAddress();
+  // std::cout << addy << std::endl;
+
+  // Ptr<Node> middleNode = n1;
+  // Ptr<PointToPointNetDevice> middleDevice = n0->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  // Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
+  // middleDevice->SetQueue(myQueue);
+
+  // Ptr<Node> firstNode = n1;
+  // Ptr<PointToPointNetDevice> firstDevice = n0->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  // Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
+  // firstDevice->SetQueue(myFirstQueue);
 
   // Set up the UdpEchoServer
   UdpEchoServerHelper echoServer (10000);

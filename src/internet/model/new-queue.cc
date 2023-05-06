@@ -15,15 +15,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "temp-queue.h"
+#include "new-queue.h"
 // #include "ns3/packet.h"
 
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE("TempQueue");
+NS_LOG_COMPONENT_DEFINE("NewTempQueue");
 
-NS_OBJECT_TEMPLATE_CLASS_DEFINE(TempQueue, Packet);
-NS_OBJECT_TEMPLATE_CLASS_DEFINE(TempQueue, QueueDiscItem);
+NS_OBJECT_TEMPLATE_CLASS_DEFINE(NewTempQueue, Packet);
+NS_OBJECT_TEMPLATE_CLASS_DEFINE(NewTempQueue, QueueDiscItem);
 
 } // namespace ns3
