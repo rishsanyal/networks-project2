@@ -1,9 +1,4 @@
 {
-    "QueueName": "SPQ",
-    "QueueInfo": {
-        "1": "High",
-        "2": "Medium",
-        "3": "Low"
-    }
-
+    "NumQueue": 2,
+    "PriorityLevel": [1, 2]
 }

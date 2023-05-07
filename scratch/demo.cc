@@ -26,6 +26,7 @@
 #include "ns3/udp-header.h"
 // #include "ns3/new-queue.h"
 #include "twoQueue.h"
+#include "spq.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -97,6 +98,16 @@ main (int argc, char *argv[])
   // Install the InternetStack on the nodes
   InternetStackHelper stack;
   stack.InstallAll();
+
+  SPQ spq("dummy_spq_config.json");
+
+  Ptr<Packet> p1 = Create<Packet>(100);
+  p1->AddPacketTag(PriorityTag(2)); // packet with priority level 2
+  spq.Enqueue(p1);
+
+  Ptr<Packet> p2 = Create<Packet>(50);
+  p2->AddPacketTag(PriorityTag(1)); // packet with priority level 1
+  spq.Enqueue(p2);
 
   // Use TrafficControlHelper to install the custom queue on devices1
   // TrafficControlHelper tch;
