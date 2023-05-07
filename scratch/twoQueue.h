@@ -9,6 +9,8 @@
 #include "ns3/drop-tail-queue.h"
 #include "ns3/udp-header.h"
 
+#include "ns3/ppp-header.h"
+
 using namespace ns3;
 
 // NS_LOG_COMPONENT_DEFINE ("MyModifiedScriptExampleWithTwoQueues");
@@ -76,43 +78,56 @@ TwoQueues::~TwoQueues ()
 
 Ptr<Packet> TwoQueues::Remove (void)
 {
+
+  std::cout << "Remove" << std::endl;
   return Create<Packet> ();
 }
 
 
 bool TwoQueues::Enqueue(Ptr<Packet> item)
 {
-  std::cout << "Enqueue" << std::endl;
+
+  Ptr<Packet> copy = item->Copy();
+  // std::cout << "Enqueue" << std::endl;
+  // UdpHeader udpHdr;
+  // item->PeekHeader(udpHdr);
+
+  PppHeader pppHeader;
+  copy->RemoveHeader(pppHeader);
+
+  // cout << "Protocol: " << pppHeader.GetProtocol() << endl;
+  // pppHeader.Print(std::cout);
+  Ipv4Header ipHeader;
+  copy->RemoveHeader(ipHeader);
+  // cout << "Source IP: " << ipHeader.GetDestination() << endl;
+
   UdpHeader udpHdr;
-  item->PeekHeader(udpHdr);
-
-  // int srcPort = udpHdr.GetSourcePort();
-  // int port = udpHdr.GetDestinationPort();
-
-  udpHdr.Print(std::cout);
-
-  m_queue1.push_back (item);
+  copy->PeekHeader(udpHdr);
+  int port = udpHdr.GetDestinationPort();
+  // udpHdr.Print(cout);
 
   // std::cout << "Dest Port: " << port << std::endl;
-  // std::cout << "Source Port: " << srcPort << std::endl;
 
-  // if (port == 10000)
-  //   {
-  //     std::cout << "First Queue" << std::endl;
-  //     // m_queue1.push_back (item);
-  //   }
-  // else if (port == 20000)
-  //   {
-  //     std::cout << "Second Queue" << std::endl;
-  //   }
-  return true;
+  if (port == 10000)
+  {
+    // std::cout << "Enqueue 1" << std::endl;
+    m_queue1.push_back (item);
+    return true;
+  }
+
+  return false;
 }
 
 Ptr<Packet> TwoQueues::Dequeue()
 {
-    // Ptr<Packet> item = DoDequeue(GetContainer().begin());
-
+    // std::cout << "Dequeue" << std::endl;
     Ptr<Packet> retItem = m_queue1.front();
+
+    if (retItem == NULL)
+    {
+        // std::cout << "NULL" << std::endl;
+        return nullptr;
+    }
 
     m_queue1.pop_front();
 

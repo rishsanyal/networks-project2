@@ -114,6 +114,12 @@ main (int argc, char *argv[])
   // tch.SetRootQueueDisc ("TwoQueues");
   // tch.Install (devices1);
 
+  Ptr<Node> firstNode = n1;
+  Ptr<PointToPointNetDevice> firstDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
+  firstDevice->SetQueue(myFirstQueue);
+
+
   // Assign IPv4 addresses to the devices
   Ipv4AddressHelper address1;
   address1.SetBase ("10.1.1.0", "255.255.255.0");
@@ -133,11 +139,6 @@ main (int argc, char *argv[])
   // Ptr<PointToPointNetDevice> middleDevice = n0->GetDevice(1)->GetObject<PointToPointNetDevice>();
   // Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
   // middleDevice->SetQueue(myQueue);
-
-  // Ptr<Node> firstNode = n1;
-  // Ptr<PointToPointNetDevice> firstDevice = n0->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  // Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
-  // firstDevice->SetQueue(myFirstQueue);
 
   // Set up the UdpEchoServer
   UdpEchoServerHelper echoServer (10000);
@@ -164,6 +165,8 @@ main (int argc, char *argv[])
   ApplicationContainer clientApps2 = echoClient2.Install (n0);
   clientApps2.Start (Seconds (2.0));
   clientApps2.Stop (Seconds (10.0));
+
+  echoClient1.SetFill(clientApps1.Get(0), "Hello World");
 
   // Enable generating the pcap files
   clientToRouter.EnablePcapAll("client-router");
