@@ -21,22 +21,9 @@ class DiffServ: public Queue<Packet> {
         virtual bool Enqueue(Ptr<Packet> p) = 0;
         virtual Ptr<Packet> Dequeue() = 0;
 
-        Ptr<Packet> DoDequeue(int priority){
-            // TODO: Check which queue to dequeue from.
-            // Unsure what the queue should be.
-            for(int i = 0; i < this->q_class.size(); i++){
-                if(this->q_class[i]->GetPriority() == priority){
-                    return q_class[i]->Dequeue();
-                }
-            }
-        };
+        virtual Ptr<Packet> DoDequeue(int priority);
 
-        bool DoEnqueue(Ptr<Packet> p){
-            // TODO: Check which queue to dequeue from.
-            // Unsure what the queue should be.
-            int index = this->Classify(p);
-            return q_class[index]->Enqueue(p);
-        };
+        virtual bool DoEnqueue(Ptr<Packet> p);
 
         Ptr<Packet> DoRemove(){
             // TODO: Check what this means
@@ -71,18 +58,7 @@ class DiffServ: public Queue<Packet> {
         }
 
         //getter function for q_class
-        bool QisEmpty(int priority){
-            for(int i = 0; i < this->q_class.size(); i++){
-                if(this->q_class[i]->GetPriority() == priority){
-                    if(this->q_class[i]->IsEmpty()){
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            }
-            return NULL;
-        }
+        virtual bool QisEmpty(int priority);
 
         virtual Ptr<Packet> Schedule();
 
@@ -92,22 +68,17 @@ class DiffServ: public Queue<Packet> {
         //     return this->DoDequeue();
         // }
 
-        uint32_t Classify(Ptr<Packet> p){
-            // TODO: Understand what the schdule method is used for.
-            for(int i = 0; i < this->q_class.size(); i++){
-                if(this->q_class[i]->Match(p)){
-                    return i;
-                }
-            }
-
-            return 0;
-        }
+        virtual uint32_t Classify(Ptr<Packet> p);
 
         bool Enqueue(Ptr<Packet> p){
             return this->DoEnqueue(p);
         }
         bool Dequeue(int priority){
             return this->DoDequeue(priority);
+        }
+
+        vector<TrafficClass*> GetQClass() const {
+            return this->q_class;
         }
 
 };
