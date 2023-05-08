@@ -10,7 +10,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/object-base.h"
 #include "traffic-class.h"
-#include "queue-mode.h"
+#include "queue-mode.cc"
 
 NS_LOG_COMPONENT_DEFINE("DiffServ");
 
@@ -24,7 +24,7 @@ public:
 
     void SetMode(QueueMode mode);
     QueueMode GetMode();
-    Ptr<Packet> Schedule();
+    virtual Ptr<Packet> Schedule();
     uint32_t Classify(Ptr<Packet> p);
 
 private:
