@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <fstream>
 #include <json.hpp>
 #include "traffic-class.h"
@@ -100,3 +101,72 @@ private:
   std::unordered_map<uint32_t, uint32_t> queue_map_; // maps priority level to queue index
   uint32_t highest_priority_ = std::numeric_limits<uint32_t>::max();
 };
+=======
+#include "ns3/core-module.h"
+#include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/traffic-control-helper.h"
+#include "ns3/packet-sink.h"
+#include <fstream>
+
+using namespace ns3;
+
+class Spq : public DiffServ {
+public:
+  Spq () : DiffServ () {}
+
+  void SetConfig (const std::string& filename) {
+    std::ifstream configFile (filename.c_str ());
+    int numQueues;
+    configFile >> numQueues;
+    QueueDiscContainer queueDiscs;
+    for (int i = 0; i < numQueues; i++) {
+      int priorityLevel;
+      configFile >> priorityLevel;
+      Ptr<QueueDisc> queueDisc = CreateObject<PfifoFastQueueDisc> ();
+      queueDisc->SetPriority (priorityLevel);
+      queueDiscs.Add (queueDisc);
+    }
+    SetQueueDiscs (queueDiscs);
+  }
+};
+
+// int main (int argc, char *argv[])
+// {
+//   // Create nodes
+//   NodeContainer nodes;
+//   nodes.Create (2);
+
+//   // Create Point-to-Point link
+//   PointToPointHelper pointToPoint;
+//   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+//   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+
+//   NetDeviceContainer devices;
+//   devices = pointToPoint.Install (nodes);
+
+//   // Install internet stack on nodes
+//   InternetStackHelper internet;
+//   internet.Install (nodes);
+
+//   // Set up traffic control for SPQ
+//   Spq spq;
+//   std::string configFilename = argv[1];
+//   spq.SetConfig (configFilename);
+//   spq.Install (devices.Get (1));
+
+//   // Install PacketSink application on receiver node
+//   Ptr<Node> receiver = nodes.Get (1);
+//   uint16_t sinkPort = 8080;
+//   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory",
+//                                       InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
+//   ApplicationContainer sinkApps = packetSinkHelper.Install (receiver);
+//   sinkApps.Start (Seconds (0.0));
+
+//   // Start simulation
+//   Simulator::Run ();
+//   Simulator::Destroy ();
+
+//   return 0;
+// }
+>>>>>>> 65351c330 (json reader)

@@ -24,9 +24,8 @@
 #include "ns3/flow-monitor-helper.h"
 // #include "ns3/drop-tail-queue.h"
 #include "ns3/udp-header.h"
-// #include "ns3/new-queue.h"
-#include "twoQueue.h"
-#include "spq.h"
+// #include "twoQueue.h"
+#include "twoQueue_new.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -64,6 +63,7 @@ main (int argc, char *argv[])
   Ptr<Node> n1 = nodes.Get(1);
   Ptr<Node> n2 = nodes.Get(2);
 
+
   // Create point-to-point channels and set their parameters
   PointToPointHelper clientToRouter;
   clientToRouter.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
@@ -72,61 +72,24 @@ main (int argc, char *argv[])
   PointToPointHelper routerToServer;
   routerToServer.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   routerToServer.SetChannelAttribute ("Delay", StringValue ("20ms"));
-  // routerToServer.SetQueue("TwoQueues");
-
-
-  // Ptr<PointToPointNetDevice> p2pDev = CreateObject<PointToPointNetDevice> ();
-  // p2pDev->SetQueue (CreateObject<TwoQueues> ());
-  // n1->AddDevice (p2pDev);
-
-  // Ptr<SimpleNetDevice> p2pDev = CreateObject<SimpleNetDevice> ();
-  // p2pDev->SetQueue (CreateObject<TwoQueues> ());
-  // n1->GetDevice(1)-> (p2pDev);
 
   // Install the channels on the nodes
   NetDeviceContainer devices1 = clientToRouter.Install (n0, n1);
   NetDeviceContainer devices2 = routerToServer.Install (n1, n2);
 
-  // Ptr<TempQueue<Packet>> myQueue = CreateObject<TempQueue<Packet>>();
-  // Ptr<PointToPointNetDevice> device = n1->GetDevice(0)->GetObject<PointToPointNetDevice>();
-
   // Ptr<Node> middleNode = nodes.Get(1);
   // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  // Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
+  // Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
   // middleDevice->SetQueue(myQueue);
 
   // Install the InternetStack on the nodes
   InternetStackHelper stack;
   stack.InstallAll();
 
-<<<<<<< HEAD
-  SPQ spq("dummy_spq_config.json");
-
-  Ptr<Packet> p1 = Create<Packet>(100);
-  p1->AddPacketTag(PriorityTag(2)); // packet with priority level 2
-  spq.Enqueue(p1);
-
-  Ptr<Packet> p2 = Create<Packet>(50);
-  p2->AddPacketTag(PriorityTag(1)); // packet with priority level 1
-  spq.Enqueue(p2);
-=======
-  // Set up traffic control for SPQ
-  Spq spq;
-  std::string configFilename = argv[1];
-  spq.SetConfig (configFilename);
-  spq.Install (devices.Get (1));
->>>>>>> 65351c330 (json reader)
-
   // Use TrafficControlHelper to install the custom queue on devices1
-  // TrafficControlHelper tch;
+  TrafficControlHelper tch;
   // tch.SetRootQueueDisc ("TwoQueues");
   // tch.Install (devices1);
-
-  Ptr<Node> firstNode = n1;
-  Ptr<PointToPointNetDevice> firstDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
-  firstDevice->SetQueue(myFirstQueue);
-
 
   // Assign IPv4 addresses to the devices
   Ipv4AddressHelper address1;
@@ -140,13 +103,10 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  // Address addy = n2->GetDevice(1)->GetAddress();
-  // std::cout << addy << std::endl;
-
-  // Ptr<Node> middleNode = n1;
-  // Ptr<PointToPointNetDevice> middleDevice = n0->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  // Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
-  // middleDevice->SetQueue(myQueue);
+  Ptr<Node> middleNode = n1;
+  Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  Ptr<TwoQueues> myQueue = CreateObject<TwoQueues>();
+  middleDevice->SetQueue(myQueue);
 
   // Set up the UdpEchoServer
   UdpEchoServerHelper echoServer (10000);
@@ -166,15 +126,19 @@ main (int argc, char *argv[])
   echoClient2.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
   echoClient2.SetAttribute ("PacketSize", UintegerValue (1024));
 
+  uint16_t sinkPort = 8080;
+  Address sinkAddress(InetSocketAddress(interfaces2.GetAddress(1), sinkPort));
+  PacketSinkHelper sinkHelper("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
   ApplicationContainer clientApps1 = echoClient1.Install (n0);
   clientApps1.Start (Seconds (2.0));
   clientApps1.Stop (Seconds (10.0));
-
+    
+  OnOffHelper onoff("ns3::UdpSocketFactory", sinkAddress);
+  onoff.SetAttribute("DataRate", StringValue("1Mbps"));
+  onoff.SetAttribute("PacketSize", UintegerValue(1000));
   ApplicationContainer clientApps2 = echoClient2.Install (n0);
   clientApps2.Start (Seconds (2.0));
   clientApps2.Stop (Seconds (10.0));
-
-  echoClient1.SetFill(clientApps1.Get(0), "Hello World");
 
   // Enable generating the pcap files
   clientToRouter.EnablePcapAll("client-router");
