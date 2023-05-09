@@ -30,7 +30,7 @@ namespace ns3 {
 
       }
 
-      bool Enqueue(const Ptr<Packet>& p) {
+      bool Enqueue(Ptr<Packet> p){
         // TODO: Check which queue to dequeue from.
               // Unsure what the queue should be.
               int index = this->Classify(p);

@@ -14,13 +14,16 @@ NS_LOG_COMPONENT_DEFINE("DiffServ");
 using namespace ns3;
 using namespace std;
 
+namespace ns3
+{
+
 class DiffServ: public Queue<Packet> {
     private:
         QueueMode m_mode;
         vector<TrafficClass*> q_class;
 
-        virtual bool Enqueue(Ptr<Packet> p) = 0;
-        virtual Ptr<Packet> Dequeue() = 0;
+        // bool Enqueue(Ptr<Packet> p) = 0;
+        // virtual Ptr<Packet> Dequeue() = 0;
 
         virtual Ptr<Packet> DoDequeue(int priority);
 
@@ -71,7 +74,7 @@ class DiffServ: public Queue<Packet> {
 
         virtual uint32_t Classify(Ptr<Packet> p);
 
-        bool Enqueue(Ptr<Packet> p){
+        bool Enqueue(Ptr<Packet> p) override{
             return this->DoEnqueue(p);
         }
         bool Dequeue(int priority){
@@ -83,5 +86,5 @@ class DiffServ: public Queue<Packet> {
         }
 
 };
-
+} // namespace name
 

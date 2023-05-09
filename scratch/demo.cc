@@ -110,9 +110,12 @@ main (int argc, char *argv[])
   // tch.SetRootQueueDisc ("TwoQueues");
   // tch.Install (devices1);
 
+    Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
+    // We tell it to make 2 queues, one w low-pri, one w high-pri
+
   Ptr<Node> firstNode = n1;
   Ptr<PointToPointNetDevice> firstDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
+
   firstDevice->SetQueue(myFirstQueue);
 
 

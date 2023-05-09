@@ -18,13 +18,13 @@ NS_LOG_COMPONENT_DEFINE("DiffServ");
 using namespace ns3;
 using namespace std;
 
-namespace name
+namespace ns3
 {
     class DiffServ: public Queue<ns3::Packet> {
     public:
         DiffServ();
         // virtual ~DiffServ();
-
+        bool Enqueue(Ptr<Packet> p) override;
         void SetMode(QueueMode mode);
         QueueMode GetMode();
         virtual Ptr<ns3::Packet> Schedule();

@@ -11,11 +11,11 @@
 using namespace ns3;
 
 namespace ns3 {
-class SPQ: public name::DiffServ {
+class SPQ: public DiffServ {
 public:
   SPQ();
 
-  bool Enqueue(const Ptr<Packet>& p);
+  bool Enqueue(Ptr<Packet> p) override;
 
   Ptr<Packet> Dequeue() override;
 

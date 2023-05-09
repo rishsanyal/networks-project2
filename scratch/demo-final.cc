@@ -346,11 +346,8 @@ bool testSPQ(){
     t2->AddFilter(filter2);
 
     // 6. Pass that Traffic class to SPQ
-    SPQ *spq = new SPQ();
-
-
-
-
+    // SPQ *spq = new SPQ();
+    Ptr<ns3::SPQ> myFirstQueue = CreateObject<ns3::SPQ>();
 
 
 
