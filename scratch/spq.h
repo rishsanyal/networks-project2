@@ -21,6 +21,9 @@ public:
 
   Ptr<Packet> Schedule() override;
 
+  Ptr<Packet> Remove() override;
+  Ptr<const Packet> Peek() const override;
+
 // private:
 //   std::vector<TrafficClass> queues_;
 //   std::unordered_map<uint32_t, uint32_t> queue_map_; // maps priority level to queue index

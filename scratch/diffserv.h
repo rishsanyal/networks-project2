@@ -31,11 +31,15 @@ namespace ns3
         uint32_t Classify(Ptr<ns3::Packet> p);
         void AddTrafficClass();
 
+        using Queue<ns3::Packet>::Remove;
+        using Queue<ns3::Packet>::Peek;
+
     private:
         Ptr<ns3::Packet> DoDequeue();
         bool DoEnqueue(Ptr<ns3::Packet> p);
         Ptr<ns3::Packet> DoRemove();
         Ptr<const ns3::Packet> DoPeek() const;
+
 
         QueueMode m_mode;
 

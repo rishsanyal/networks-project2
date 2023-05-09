@@ -37,6 +37,15 @@ namespace ns3 {
               return q_class[index]->Enqueue(p);
       }
 
+      bool Remove(){
+        return false;
+      }
+
+      Ptr<Packet> Peek() {
+          return nullptr;
+      }
+
+
       Ptr<Packet> Dequeue() {
 
         // TODO: Check which queue to dequeue from.
