@@ -29,7 +29,7 @@ namespace ns3
         QueueMode GetMode();
         virtual Ptr<ns3::Packet> Schedule();
         uint32_t Classify(Ptr<ns3::Packet> p);
-        void AddTrafficClass();
+        void AddTrafficClass(TrafficClass* trafficClass);
 
         using Queue<ns3::Packet>::Remove;
         using Queue<ns3::Packet>::Peek;

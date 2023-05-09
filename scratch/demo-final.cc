@@ -34,7 +34,7 @@
 #include "traffic-class.cc"
 #include"destination-port-number.cc"
 #include"protocol-number.cc"
-#include "spq.h"
+#include "spq.cc"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -347,7 +347,14 @@ bool testSPQ(){
 
     // 6. Pass that Traffic class to SPQ
     // SPQ *spq = new SPQ();
-    Ptr<ns3::SPQ> myFirstQueue = CreateObject<ns3::SPQ>();
+    Ptr<SPQ> myFirstQueue = CreateObject<SPQ>();
+
+    // TwoQueues *spq = new TwoQueues();
+
+    // spq->AddTrafficClass(t1);
+
+    // Ptr<SPQ> myFirstQueue = new SPQ();
+
 
 
 
