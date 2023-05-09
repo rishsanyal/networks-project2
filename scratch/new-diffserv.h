@@ -133,6 +133,8 @@ void NewDiffServ::AddTrafficClass(NewTrafficClass* trafficClass) {
 
     // priorityMap.insert(std::pair<uint32_t, int>(trafficClass->GetPriorityLevel(), currentSize));
 
+    // Get the weight of the TrafficClass and add that to our weightTracker
+
     q_class.push_back(trafficClass);
 }
 

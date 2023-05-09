@@ -22,6 +22,7 @@ class NewTrafficClass{
 
         bool Enqueue(Ptr<Packet> p);
         Ptr<Packet> Dequeue();
+        int PeekSize();
 
 
         bool Match(Ptr<Packet> p) const;
@@ -29,6 +30,8 @@ class NewTrafficClass{
         uint32_t GetPriorityLevel() const;
         bool AddFilter(FilterContainer* f);
         bool isEmpty() const;
+
+        double GetWeight();
 
     private:
         uint32_t bytes;
@@ -39,6 +42,8 @@ class NewTrafficClass{
         uint32_t priorityLevel;
         bool isDefault;
         queue<Ptr<Packet>> m_queue;
+
+        vector<int> weightVector;
 };
 
 NewTrafficClass::NewTrafficClass(uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault){
@@ -51,6 +56,14 @@ NewTrafficClass::NewTrafficClass(uint32_t maxPackets, uint32_t maxBytes, double 
     this->isDefault = isDefault;
 }
 
+double NewTrafficClass::GetWeight(){
+    return weight;
+}
+
+int NewTrafficClass::PeekSize(){
+    Ptr<Packet> p = m_queue.front();
+    return p->GetSize();
+}
 
 bool NewTrafficClass::Enqueue(Ptr<Packet> p){
     m_queue.push(p);

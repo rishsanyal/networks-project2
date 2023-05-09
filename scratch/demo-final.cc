@@ -39,6 +39,7 @@
 #include "new-traffic-class.h"
 #include "new-diffserv.h"
 #include "new-spq.h"
+#include "new-drr.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -352,7 +353,7 @@ bool testSPQ(){
     // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
     // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
     NewTrafficClass *t1 = new NewTrafficClass(
-        10, 10, 0.0, 3, false
+        10, 10, 0.0, 2, false
     );
     t1->AddFilter(filter1);
 
@@ -409,6 +410,117 @@ bool testSPQ(){
    return false;
 }
 
+
+bool testDRR(){
+    /*
+        1. Create Source packets with two different Applications
+        2. Create Destination IP Address
+        3. Create filters for those two applications
+        4. Create a new Filter Container for both of those
+        5. Create Traffic Class with those two filters
+        6. Pass that Traffic class to DRR
+        7. Check if the packets are enqueued in the correct order
+    */
+
+    // 1. Create Source packets with two different Applications
+
+    // Packets for queue 1
+    Ptr<ns3::Packet> p_1_1 = __createPacket("123456789", SOURCE_IP);
+    cout << p_1_1->GetUid() << endl;
+
+    Ptr<ns3::Packet> p_1_2 = __createPacket("p_1_2--2123456789111232413312", SOURCE_IP);
+    cout << p_1_2->GetUid() << endl;
+    Ptr<ns3::Packet> p_1_3 = __createPacket("p_1_3", SOURCE_IP);
+
+    // 2. Create Destination IP Address
+    // ns3::Packet for queue 2
+    const char * source_ip_two = "10.2.2.2";
+    Ptr<ns3::Packet> p_2_1 = __createPacket("123", source_ip_two);
+    cout << p_2_1->GetUid() << endl;
+
+    Ptr<ns3::Packet> p_2_2 = __createPacket("p_2_2", source_ip_two);
+    Ptr<ns3::Packet> p_2_3 = __createPacket("p_2_3", source_ip_two);
+
+    // 3. Create filters for those two applications
+    // Creating Source IP Filters for both the queues
+
+    SourceIPAddress *f1 = new SourceIPAddress();
+    f1->setValue(Ipv4Address(SOURCE_IP));
+
+    SourceIPAddress *f2 = new SourceIPAddress();
+    f2->setValue(Ipv4Address(source_ip_two));
+
+    // 4. Create a new Filter Container for both of those
+
+    FilterContainer *filter1 = new FilterContainer();
+    filter1->addElement(f1);
+
+    FilterContainer *filter2 = new FilterContainer();
+    filter2->addElement(f2);
+
+
+    // 5. Create Traffic Class with those two filters
+
+    // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
+    // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
+    NewTrafficClass *t1 = new NewTrafficClass(
+        10, 10, 1, 0, false
+    );
+    t1->AddFilter(filter1);
+
+    NewTrafficClass *t2 = new NewTrafficClass(
+        10, 10, 3, 0, false
+    );
+    t2->AddFilter(filter2);
+
+    // 6. Pass that Traffic class to SPQ
+    NewDRRQueue *drr = new NewDRRQueue();
+
+    drr->AddTrafficClass(t1);
+    drr->AddTrafficClass(t2);
+    // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
+
+    drr->test();
+
+    // 7. Check if the packets are enqueued in the correct order
+    drr->Enqueue(p_1_1);
+    drr->Enqueue(p_2_1);
+    drr->Enqueue(p_1_2);
+
+
+    // const char * source_ip_three = "10.3.2.1";
+    // Ptr<ns3::Packet> p_3_1 = __createPacket("p_2_1", source_ip_three);
+    // cout << p_3_1->GetUid() << endl;
+    // spq->Enqueue(p_3_1);
+
+
+    Ptr<ns3::Packet> p1 = drr->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
+
+
+    p1 = drr->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
+
+
+    p1 = drr->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
+
+
+   return false;
+}
+
 int main (int argc, char *argv[])
 {
     CommandLine cmd (__FILE__);
@@ -427,7 +539,8 @@ int main (int argc, char *argv[])
     // testSourceMask(__createPacket());
     // TestTCPass(Create<ns3::Packet> (100));
 
-    testSPQ();
+    // testSPQ();
+    testDRR();
 
   return 0;
 }

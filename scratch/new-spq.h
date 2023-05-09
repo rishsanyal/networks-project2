@@ -96,9 +96,6 @@ Ptr<ns3::Packet> NewPriQueue::Schedule(){
     // Gets the index of the traffic class that has the highest priority
     // and has a packet to send
 
-
-    // cout << "NewPriQueue::Schedule Needs to be implemented" << endl;
-
     vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
 
     uint32_t curr_highest_priority_index_with_packets = UINT32_MAX;
@@ -113,8 +110,6 @@ Ptr<ns3::Packet> NewPriQueue::Schedule(){
             }
         }
     }
-
-
 
     if (index == -1) {
         return nullptr;
