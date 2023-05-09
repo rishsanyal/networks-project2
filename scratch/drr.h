@@ -1,30 +1,37 @@
-#ifndef SPQ_H
-#define SPQ_H
+#ifndef DRR_H
+#define DRR_H
 
+#include <fstream>
 #include <vector>
-#include <ns3/packet.h>
-#include <ns3/diffserv.h>
+#include <memory>
+#include "diffserv.h"
 #include "traffic-class.h"
 
 namespace ns3 {
 
-class SPQ : public DiffServ {
+class DRR {
+    private:
+        int noOfQueues;
+        std::vector<int> quantumValues;
+        std::unique_ptr<DiffServ> diffServ;
+        std::vector<std::unique_ptr<TrafficClass>> q_class;
+        std::vector<int> deficitCounter;
+
 public:
-    SPQ(int noOfQueues, std::vector<int> quantumValues);
-    bool Enqueue(const ns3::Ptr<ns3::Packet>& p) override;
-    ns3::Ptr<ns3::Packet> Dequeue() override;
-    bool QisEmpty(int priority) const override;
-    ns3::Ptr<ns3::Packet> Schedule() override;
-    uint32_t Classify(ns3::Ptr<ns3::Packet> p) override;
+    DRR(int noOfQueues, std::vector<int> quantumValues);
+    bool Enqueue(const Ptr<Packet>& p);
+    Ptr<Packet> Dequeue();
+    uint32_t Classify(Ptr<Packet> p);
 
 private:
-    int m_noOfQueues;
-    std::vector<int> m_quantumValues;
-    std::vector<TrafficClass*> m_q_class;
-    std::vector<int> m_deficitCounters;
-    int m_currentQueue;
+    bool QisEmpty(int i) const;
 };
 
 } // namespace ns3
 
-#endif /* SPQ_H */
+#endif // DRR_H
+
+
+
+
+
