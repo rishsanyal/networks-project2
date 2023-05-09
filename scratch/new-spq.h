@@ -1,0 +1,153 @@
+#ifndef NEW_SPQ_H
+#define NEW_SPQ_H
+
+#include "ns3/packet.h"
+
+// #include <fstream>
+#include "new-diffserv.h"
+// #include "queue-mode.cc"
+
+using namespace std;
+
+namespace ns3
+{
+
+class NewPriQueue : public NewDiffServ
+{
+public:
+    NewPriQueue();
+    // ~NewPriQueue() override;
+
+    bool Enqueue(Ptr<ns3::Packet> p);
+    Ptr<ns3::Packet> Dequeue();
+    Ptr<ns3::Packet> Remove();
+    Ptr<const ns3::Packet> Peek() const;
+
+    Ptr<ns3::Packet> Schedule();
+    uint32_t Classify(Ptr<ns3::Packet> p);
+
+    void test();
+
+    using NewDiffServ::AddTrafficClass;
+    using NewDiffServ::EnqueueAtIndex;
+    using NewDiffServ::checkForPacketInAllTrafficClasses;
+    using NewDiffServ::GetTrafficClasses;
+
+
+private:
+    Ptr<ns3::Packet> DoDequeue(int priorityLevel);
+
+    bool DoEnqueue(Ptr<ns3::Packet> p);
+    Ptr<ns3::Packet> DoRemove();
+    Ptr<const ns3::Packet> DoPeek() const;
+
+    int noOfQueues;
+    vector<int> priorityLevels;
+    vector<NewTrafficClass*> q_class;
+    QueueMode m_mode;
+};
+
+NewPriQueue::NewPriQueue() {
+    cout << "NewPriQueue" << endl;
+    noOfQueues = 0;
+    priorityLevels = vector<int>();
+    q_class = vector<NewTrafficClass*>();
+    m_mode = QueueMode::Packet; //TODO: Get this from the config file?
+}
+
+bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
+    // cout << "NewPriQueue::Enqueue" << endl;
+
+    int vectorIndex = Classify(p);
+
+    if (vectorIndex == -1) {
+        return false;
+    }
+
+    bool enqueueStatus = EnqueueAtIndex(p, vectorIndex);
+
+    // if (enqueueStatus) {
+    //     priorityMap.insert(std::pair<int, int>(vectorIndex, priorityLevels[vectorIndex]));
+    // }
+
+    return enqueueStatus;
+}
+
+Ptr<ns3::Packet> NewPriQueue::Dequeue(){
+    cout << "NewPriQueue::Dequeue" << endl;
+
+    return Schedule();
+}
+
+
+Ptr<ns3::Packet> NewPriQueue::Remove(){
+    cout << "NewPriQueue::Remove" << endl;
+    return DoRemove();
+}
+
+Ptr<const ns3::Packet> NewPriQueue::Peek() const{
+    cout << "NewPriQueue::Peek" << endl;
+    return DoPeek();
+}
+
+
+Ptr<ns3::Packet> NewPriQueue::Schedule(){
+    // Gets the index of the traffic class that has the highest priority
+    // and has a packet to send
+
+
+    cout << "NewPriQueue::Schedule Needs to be implemented" << endl;
+
+    vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
+
+    int curr_highest_priority_index_with_packets = -1;
+
+
+    for (int i = 0; i < trafficClasses.size(); i++) {
+        if (!trafficClasses[i]->isEmpty()) {
+            if (trafficClasses[i]->GetPriorityLevel() < curr_highest_priority_index_with_packets) {
+                curr_highest_priority_index_with_packets = i;
+            }
+        }
+    }
+
+    if (curr_highest_priority_index_with_packets == -1) {
+        return nullptr;
+    }
+
+    return DequeueFromIndex(curr_highest_priority_index_with_packets);
+}
+
+uint32_t NewPriQueue::Classify(Ptr<ns3::Packet> p){
+    int trafficClassIndex = checkForPacketInAllTrafficClasses(p);
+    return trafficClassIndex;
+}
+
+Ptr<ns3::Packet> NewPriQueue::DoDequeue(int priorityLevel){
+    cout << "NewPriQueue::DoDequeue " << endl;
+    cout << "priorityLevel: " << priorityLevel << endl;
+    return nullptr;
+}
+
+bool NewPriQueue::DoEnqueue(Ptr<ns3::Packet> p){
+    // cout << "NewPriQueue::DoEnqueue" << endl;
+    return true;
+}
+
+Ptr<ns3::Packet> NewPriQueue::DoRemove(){
+    cout << "NewPriQueue::DoRemove" << endl;
+    return nullptr;
+}
+
+Ptr<const ns3::Packet> NewPriQueue::DoPeek() const{
+    cout << "NewPriQueue::DoPeek" << endl;
+    return nullptr;
+}
+
+void NewPriQueue::test(){
+    cout << "NewPriQueue::test" << endl;
+}
+
+} // namespace ns3
+
+#endif // NEW_SPQ_H

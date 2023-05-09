@@ -14,13 +14,11 @@ using namespace ns3;
 class SPQ: public DiffServ {
 public:
   SPQ();
+  ~SPQ() override;
 
   bool Enqueue(Ptr<ns3::Packet> p) override;
-
   Ptr<ns3::Packet> Dequeue() override;
-
-  Ptr<ns3::Packet> Schedule() override;
-
+  Ptr<ns3::Packet> Schedule();
   Ptr<ns3::Packet> Remove() override;
   Ptr<const ns3::Packet> Peek() const override;
 

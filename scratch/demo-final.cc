@@ -36,6 +36,10 @@
 #include"protocol-number.cc"
 #include "spq.cc"
 
+#include "new-traffic-class.h"
+#include "new-diffserv.h"
+#include "new-spq.h"
+
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
 // #include "temp-queue.h"
@@ -53,9 +57,9 @@ using namespace std;
 
 const char* SOURCE_IP = "10.0.1.1";
 
-Ptr<ns3::Packet> __createPacket(const char* sourceIP = SOURCE_IP){
+Ptr<ns3::Packet> __createPacket(const char* msg, const char* sourceIP = SOURCE_IP){
     // Ptr<ns3::Packet> p = Create<ns3::Packet>("Hello World");
-    Ptr<ns3::Packet> p = Create<ns3::Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
+    Ptr<ns3::Packet> p = Create<ns3::Packet> (reinterpret_cast<const uint8_t*> ("Hello"), 5);
 
     ns3::Ipv4Header ipv4Header;
     Ipv4Address sourceAddress = Ipv4Address(sourceIP);
@@ -309,16 +313,21 @@ bool testSPQ(){
     // 1. Create Source packets with two different Applications
 
     // Packets for queue 1
-    Ptr<ns3::Packet> p_1_1 = __createPacket();
-    Ptr<ns3::Packet> p_1_2 = __createPacket();
-    Ptr<ns3::Packet> p_1_3 = __createPacket();
+    Ptr<ns3::Packet> p_1_1 = __createPacket("p_1_1", SOURCE_IP);
+    cout << p_1_1->GetUid() << endl;
+
+    Ptr<ns3::Packet> p_1_2 = __createPacket("p_1_2", SOURCE_IP);
+    cout << p_1_2->GetUid() << endl;
+    Ptr<ns3::Packet> p_1_3 = __createPacket("p_1_3", SOURCE_IP);
 
     // 2. Create Destination IP Address
     // ns3::Packet for queue 2
     const char * source_ip_two = "10.2.2.2";
-    Ptr<ns3::Packet> p_2_1 = __createPacket(source_ip_two);
-    Ptr<ns3::Packet> p_2_2 = __createPacket(source_ip_two);
-    Ptr<ns3::Packet> p_2_3 = __createPacket(source_ip_two);
+    Ptr<ns3::Packet> p_2_1 = __createPacket("p_2_1", source_ip_two);
+    cout << p_2_1->GetUid() << endl;
+
+    Ptr<ns3::Packet> p_2_2 = __createPacket("p_2_2", source_ip_two);
+    Ptr<ns3::Packet> p_2_3 = __createPacket("p_2_3", source_ip_two);
 
     // 3. Create filters for those two applications
     // Creating Source IP Filters for both the queues
@@ -339,15 +348,58 @@ bool testSPQ(){
 
 
     // 5. Create Traffic Class with those two filters
-    TrafficClass *t1 = new TrafficClass();
+
+    // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
+    // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
+    NewTrafficClass *t1 = new NewTrafficClass(
+        10, 10, 0.0, 100, false
+    );
     t1->AddFilter(filter1);
 
-    TrafficClass *t2 = new TrafficClass();
+    NewTrafficClass *t2 = new NewTrafficClass(
+        10, 10, 0.0, 2, false
+    );
     t2->AddFilter(filter2);
 
     // 6. Pass that Traffic class to SPQ
-    // SPQ *spq = new SPQ();
-    Ptr<SPQ> myFirstQueue = CreateObject<SPQ>();
+    NewPriQueue *spq = new NewPriQueue();
+
+    spq->AddTrafficClass(t1);
+    spq->AddTrafficClass(t2);
+    // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
+
+    spq->test();
+
+    // 7. Check if the packets are enqueued in the correct order
+    spq->Enqueue(p_1_1);
+    spq->Enqueue(p_2_1);
+    spq->Enqueue(p_1_2);
+
+    Ptr<ns3::Packet> p1 = spq->Dequeue();
+
+    cout << p1->GetUid() << endl;
+
+
+    p1 = spq->Dequeue();
+
+    cout << p1->GetUid() << endl;
+
+
+    p1 = spq->Dequeue();
+
+    cout << p1->GetUid() << endl;
+
+    // char* buffer = new char[p1->GetSize()];
+
+    // Ptr<ns3::Packet> packet = Create<ns3::Packet> ();
+    // p1->CopyData(buffer, packet->GetSize());
+
+    // cout << buffer;
+
+    // cout << "Packet: " << endl;
+    // p1->Print(std::cout);
+
+
 
     // TwoQueues *spq = new TwoQueues();
 
@@ -378,6 +430,8 @@ int main (int argc, char *argv[])
 
     // testSourceMask(__createPacket());
     // TestTCPass(Create<ns3::Packet> (100));
+
+    testSPQ();
 
   return 0;
 }
