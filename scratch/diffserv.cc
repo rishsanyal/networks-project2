@@ -3,6 +3,7 @@
 #include "ns3/queue.h"
 // #include "src/network/utils/queue.h"
 #include "ns3/log.h"
+#include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/object-base.h"
 #include "traffic-class.h"
@@ -64,7 +65,7 @@ class DiffServ: public Queue<Packet> {
 
         // Ptr<Packet> Schedule(){
         //     // TODO: Understand what the schdule method is used for.
-            
+
         //     return this->DoDequeue();
         // }
 

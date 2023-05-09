@@ -26,7 +26,7 @@ using namespace std;
     // public:
         // vector<FilterContainer*> filters;
 
-        TrafficClass::TrafficClass(uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false){
+        TrafficClass::TrafficClass(uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault){
             this->bytes = 0;
             this->packets = 0;
             this->maxPackets = maxPackets;

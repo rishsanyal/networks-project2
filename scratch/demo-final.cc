@@ -51,13 +51,11 @@
 using namespace ns3;
 using namespace std;
 
-NS_LOG_COMPONENT_DEFINE("DemoFinal");
-
 const char* SOURCE_IP = "10.0.1.1";
 
-Ptr<Packet> __createPacket(const char* sourceIP = SOURCE_IP){
-    // Ptr<Packet> p = Create<Packet>("Hello World");
-    Ptr<Packet> p = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
+Ptr<ns3::Packet> __createPacket(const char* sourceIP = SOURCE_IP){
+    // Ptr<ns3::Packet> p = Create<ns3::Packet>("Hello World");
+    Ptr<ns3::Packet> p = Create<ns3::Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
 
     ns3::Ipv4Header ipv4Header;
     Ipv4Address sourceAddress = Ipv4Address(sourceIP);
@@ -79,7 +77,7 @@ Ptr<Packet> __createPacket(const char* sourceIP = SOURCE_IP){
     return p;
 }
 
-void testSourceIPAdress(Ptr<Packet> p1){
+void testSourceIPAdress(Ptr<ns3::Packet> p1){
     UdpHeader udpHeader;
     udpHeader.SetSourcePort(1234);
     udpHeader.SetDestinationPort(5678);
@@ -98,7 +96,7 @@ void testSourceIPAdress(Ptr<Packet> p1){
     std::cout << (f1->match(p1) == false) << std::endl;
 }
 
-void testSourcePortNumber(Ptr<Packet> p1){
+void testSourcePortNumber(Ptr<ns3::Packet> p1){
 
     ns3::Ipv4Header ipv4Header;
     ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
@@ -118,7 +116,7 @@ void testSourcePortNumber(Ptr<Packet> p1){
     std::cout << (f1->match(p1) == true) << std::endl;
 }
 
-void testDestinationPortNumber(Ptr<Packet> p1){
+void testDestinationPortNumber(Ptr<ns3::Packet> p1){
 
     ns3::Ipv4Header ipv4Header;
     ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
@@ -138,7 +136,7 @@ void testDestinationPortNumber(Ptr<Packet> p1){
     std::cout << (f1->match(p1) == true) << std::endl;
 }
 
-void testProtocolNumber(Ptr<Packet> p1){
+void testProtocolNumber(Ptr<ns3::Packet> p1){
 
     ns3::Ipv4Header ipv4Header;
     ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1/300")); // Set the source IP address
@@ -157,7 +155,7 @@ void testProtocolNumber(Ptr<Packet> p1){
 }
 
 
-void testSourceMask(Ptr<Packet> p1){
+void testSourceMask(Ptr<ns3::Packet> p1){
     SourceIPMask *f1 = new SourceIPMask();
     f1->setValue(Ipv4Address("10.0.1.1"), Ipv4Mask("255.255.1.0"));
 
@@ -165,7 +163,7 @@ void testSourceMask(Ptr<Packet> p1){
     std::cout << (f1->match(p1) == true) << std::endl;
 }
 
-void testFilterFail(Ptr<Packet> p1){
+void testFilterFail(Ptr<ns3::Packet> p1){
     UdpHeader udpHeader;
     udpHeader.SetSourcePort(1234);
     udpHeader.SetDestinationPort(5678);
@@ -203,7 +201,7 @@ void testFilterFail(Ptr<Packet> p1){
     cout << (filter->match(p1) == 0) << endl;
 }
 
-void testFilterPass(Ptr<Packet> p1){
+void testFilterPass(Ptr<ns3::Packet> p1){
     UdpHeader udpHeader;
     udpHeader.SetSourcePort(1234);
     udpHeader.SetDestinationPort(5678);
@@ -231,7 +229,7 @@ void testFilterPass(Ptr<Packet> p1){
     cout << (filter->match(p1) == 0) << endl;
 }
 
-void TestTCPass(Ptr<Packet> p1) {
+void TestTCPass(Ptr<ns3::Packet> p1) {
     UdpHeader udpHeader;
     udpHeader.SetSourcePort(1234);
     udpHeader.SetDestinationPort(5678);
@@ -285,7 +283,7 @@ void TestTCPass(Ptr<Packet> p1) {
         std::cout << "Not added 3rd packet to queue" << std::endl;
     }
 
-    Ptr<Packet> p2 = t1->Dequeue();
+    Ptr<ns3::Packet> p2 = t1->Dequeue();
     if(p2 == NULL) {
         std::cout << "No packet in queue" << std::endl;
     } else {
@@ -311,16 +309,16 @@ bool testSPQ(){
     // 1. Create Source packets with two different Applications
 
     // Packets for queue 1
-    Ptr<Packet> p_1_1 = __createPacket();
-    Ptr<Packet> p_1_2 = __createPacket();
-    Ptr<Packet> p_1_3 = __createPacket();
+    Ptr<ns3::Packet> p_1_1 = __createPacket();
+    Ptr<ns3::Packet> p_1_2 = __createPacket();
+    Ptr<ns3::Packet> p_1_3 = __createPacket();
 
     // 2. Create Destination IP Address
-    // Packet for queue 2
+    // ns3::Packet for queue 2
     const char * source_ip_two = "10.2.2.2";
-    Ptr<Packet> p_2_1 = __createPacket(source_ip_two);
-    Ptr<Packet> p_2_2 = __createPacket(source_ip_two);
-    Ptr<Packet> p_2_3 = __createPacket(source_ip_two);
+    Ptr<ns3::Packet> p_2_1 = __createPacket(source_ip_two);
+    Ptr<ns3::Packet> p_2_2 = __createPacket(source_ip_two);
+    Ptr<ns3::Packet> p_2_3 = __createPacket(source_ip_two);
 
     // 3. Create filters for those two applications
     // Creating Source IP Filters for both the queues
@@ -354,6 +352,8 @@ bool testSPQ(){
 
 
 
+
+
    return false;
 }
 
@@ -362,18 +362,18 @@ int main (int argc, char *argv[])
     CommandLine cmd (__FILE__);
     cmd.Parse (argc, argv);
 
-    Ptr<Packet> p1 = Create<Packet> (100);
+    Ptr<ns3::Packet> p1 = Create<ns3::Packet> (100);
 
     // testSourceIPAdress(p1);
-    // testFilterFail(Create<Packet> (100));
-    // testFilterPass(Create<Packet> (100));
-    // testSourcePortNumber(Create<Packet> (100));
-    // testDestinationPortNumber(Create<Packet> (100));
-    // testProtocolNumber(Create<Packet> (100));
-    // TestTCPass(Create<Packet> (100));
+    // testFilterFail(Create<ns3::Packet> (100));
+    // testFilterPass(Create<ns3::Packet> (100));
+    // testSourcePortNumber(Create<ns3::Packet> (100));
+    // testDestinationPortNumber(Create<ns3::Packet> (100));
+    // testProtocolNumber(Create<ns3::Packet> (100));
+    // TestTCPass(Create<ns3::Packet> (100));
 
     // testSourceMask(__createPacket());
-    // TestTCPass(Create<Packet> (100));
+    // TestTCPass(Create<ns3::Packet> (100));
 
   return 0;
 }
