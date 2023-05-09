@@ -352,7 +352,7 @@ bool testSPQ(){
     // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
     // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
     NewTrafficClass *t1 = new NewTrafficClass(
-        10, 10, 0.0, 100, false
+        10, 10, 0.0, 3, false
     );
     t1->AddFilter(filter1);
 
@@ -375,39 +375,35 @@ bool testSPQ(){
     spq->Enqueue(p_2_1);
     spq->Enqueue(p_1_2);
 
+
+    // const char * source_ip_three = "10.3.2.1";
+    // Ptr<ns3::Packet> p_3_1 = __createPacket("p_2_1", source_ip_three);
+    // cout << p_3_1->GetUid() << endl;
+    // spq->Enqueue(p_3_1);
+
+
     Ptr<ns3::Packet> p1 = spq->Dequeue();
-
-    cout << p1->GetUid() << endl;
-
-
-    p1 = spq->Dequeue();
-
-    cout << p1->GetUid() << endl;
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
 
 
     p1 = spq->Dequeue();
-
-    cout << p1->GetUid() << endl;
-
-    // char* buffer = new char[p1->GetSize()];
-
-    // Ptr<ns3::Packet> packet = Create<ns3::Packet> ();
-    // p1->CopyData(buffer, packet->GetSize());
-
-    // cout << buffer;
-
-    // cout << "Packet: " << endl;
-    // p1->Print(std::cout);
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
 
 
-
-    // TwoQueues *spq = new TwoQueues();
-
-    // spq->AddTrafficClass(t1);
-
-    // Ptr<SPQ> myFirstQueue = new SPQ();
-
-
+    p1 = spq->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
 
 
    return false;

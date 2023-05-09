@@ -6,6 +6,7 @@
 // #include <fstream>
 #include "new-diffserv.h"
 // #include "queue-mode.cc"
+#include <stdint.h>
 
 using namespace std;
 
@@ -74,7 +75,7 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewPriQueue::Dequeue(){
-    cout << "NewPriQueue::Dequeue" << endl;
+    // cout << "NewPriQueue::Dequeue" << endl;
 
     return Schedule();
 }
@@ -96,26 +97,30 @@ Ptr<ns3::Packet> NewPriQueue::Schedule(){
     // and has a packet to send
 
 
-    cout << "NewPriQueue::Schedule Needs to be implemented" << endl;
+    // cout << "NewPriQueue::Schedule Needs to be implemented" << endl;
 
     vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
 
-    int curr_highest_priority_index_with_packets = -1;
+    uint32_t curr_highest_priority_index_with_packets = UINT32_MAX;
+    size_t index = -1;
 
 
-    for (int i = 0; i < trafficClasses.size(); i++) {
+    for (size_t i = 0; i < trafficClasses.size(); i++) {
         if (!trafficClasses[i]->isEmpty()) {
             if (trafficClasses[i]->GetPriorityLevel() < curr_highest_priority_index_with_packets) {
-                curr_highest_priority_index_with_packets = i;
+                curr_highest_priority_index_with_packets = trafficClasses[i]->GetPriorityLevel();
+                index = i;
             }
         }
     }
 
-    if (curr_highest_priority_index_with_packets == -1) {
+
+
+    if (index == -1) {
         return nullptr;
     }
 
-    return DequeueFromIndex(curr_highest_priority_index_with_packets);
+    return DequeueFromIndex(index);
 }
 
 uint32_t NewPriQueue::Classify(Ptr<ns3::Packet> p){
