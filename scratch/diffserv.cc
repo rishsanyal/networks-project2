@@ -85,6 +85,10 @@ class DiffServ: public Queue<Packet> {
             return this->q_class;
         }
 
+        void AddTrafficClass(TrafficClass* trafficClass){
+            this->q_class.push_back(trafficClass);
+        }
+
 };
 } // namespace name
 

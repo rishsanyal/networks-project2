@@ -1,6 +1,6 @@
 #include <fstream>
-#include<diffserv.h>
-#include <json.hpp>
+#include "diffserv.cc"
+// #include <json.hpp>
 #include "traffic-class.h"
 
 
@@ -8,14 +8,14 @@
 
 using namespace ns3;
 
-namespace ns3 {
+// namespace ns3 {
   class SPQ: public DiffServ {
 
     private:
-    int noOfQueues;
-    vector<int> priorityLevels;
-    DiffServ* diffServ;
-    vector<TrafficClass*> q_class;
+      int noOfQueues;
+      vector<int> priorityLevels;
+      DiffServ* diffServ;
+      vector<TrafficClass*> q_class;
 
     public:
       SPQ() {
@@ -30,7 +30,7 @@ namespace ns3 {
 
       }
 
-      bool Enqueue(Ptr<Packet> p){
+      bool Enqueue(Ptr<ns3::Packet> p){
         // TODO: Check which queue to dequeue from.
               // Unsure what the queue should be.
               int index = this->Classify(p);
@@ -41,12 +41,12 @@ namespace ns3 {
         return false;
       }
 
-      Ptr<Packet> Peek() {
+      Ptr<ns3::Packet> Peek() {
           return nullptr;
       }
 
 
-      Ptr<Packet> Dequeue() {
+      Ptr<ns3::Packet> Dequeue() {
 
         // TODO: Check which queue to dequeue from.
               // Unsure what the queue should be.
@@ -73,7 +73,7 @@ namespace ns3 {
       }
 
 
-      Ptr<Packet> SPQ::Schedule() {
+      Ptr<ns3::Packet> SPQ::Schedule() {
         for(int i = 0; i < noOfQueues; i++) {
           if(!diffServ->QisEmpty(priorityLevels[i])) {
             return diffServ->Dequeue(priorityLevels[i]);
@@ -82,7 +82,7 @@ namespace ns3 {
         return nullptr;
       }
 
-      uint32_t Classify(Ptr<Packet> p){
+      uint32_t Classify(Ptr<ns3::Packet> p){
               // TODO: Understand what the schdule method is used for.
               for(int i = 0; i < this->q_class.size(); i++){
                   if(this->q_class[i]->Match(p)){
@@ -94,4 +94,4 @@ namespace ns3 {
           }
 
   };
-}
+// }

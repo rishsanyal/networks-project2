@@ -43,7 +43,7 @@
 using namespace ns3;
 using namespace std;
 
-NS_LOG_COMPONENT_DEFINE("FirstScriptExample");
+// NS_LOG_COMPONENT_DEFINE("FirstScriptExample");
 
 int
 main (int argc, char *argv[])
@@ -100,17 +100,17 @@ main (int argc, char *argv[])
   stack.InstallAll();
 
   // Set up traffic control for SPQ
-  Spq spq;
-  std::string configFilename = argv[1];
-  spq.SetConfig (configFilename);
-  spq.Install (devices.Get (1));
+  // SPQ spq;
+  // std::string configFilename = argv[1];
+  // spq.SetConfig (configFilename);
+  // spq.Install (devices.Get (1));
 
   // Use TrafficControlHelper to install the custom queue on devices1
   // TrafficControlHelper tch;
   // tch.SetRootQueueDisc ("TwoQueues");
   // tch.Install (devices1);
 
-    Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
+  Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
     // We tell it to make 2 queues, one w low-pri, one w high-pri
 
   Ptr<Node> firstNode = n1;
