@@ -35,7 +35,6 @@ private:
 
     QueueMode m_mode;
 
-    // TODO: Needs to be imported
     vector<TrafficClass*> q_class;
 };
 

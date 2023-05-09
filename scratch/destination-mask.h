@@ -6,13 +6,14 @@
 #include "filter-element.h"
 
 using namespace ns3;
-using namespace std; 
+using namespace std;
 
-class DestinationMask: public FilterElement {
+class DestinationIPMask: public FilterElement {
 public:
-    DestinationMask(){ }
+    DestinationIPMask(){ }
 
     bool match(Ptr<Packet> p) { }
+    void setValue(Ipv4Address address, Ipv4Mask value){}
 
 private:
     Ipv4Mask value;

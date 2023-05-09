@@ -99,23 +99,11 @@ main (int argc, char *argv[])
   InternetStackHelper stack;
   stack.InstallAll();
 
-<<<<<<< HEAD
-  SPQ spq("dummy_spq_config.json");
-
-  Ptr<Packet> p1 = Create<Packet>(100);
-  p1->AddPacketTag(PriorityTag(2)); // packet with priority level 2
-  spq.Enqueue(p1);
-
-  Ptr<Packet> p2 = Create<Packet>(50);
-  p2->AddPacketTag(PriorityTag(1)); // packet with priority level 1
-  spq.Enqueue(p2);
-=======
   // Set up traffic control for SPQ
   Spq spq;
   std::string configFilename = argv[1];
   spq.SetConfig (configFilename);
   spq.Install (devices.Get (1));
->>>>>>> 65351c330 (json reader)
 
   // Use TrafficControlHelper to install the custom queue on devices1
   // TrafficControlHelper tch;

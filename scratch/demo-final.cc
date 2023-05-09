@@ -29,11 +29,12 @@
 
 #include"source-ip-address.cc"
 #include"filter-container.cc"
-#include"source-mask.cc"
+#include"source-ip-mask.cc"
 #include"source-port-number.cc"
 #include "traffic-class.cc"
 #include"destination-port-number.cc"
 #include"protocol-number.cc"
+#include "spq.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -51,6 +52,32 @@ using namespace ns3;
 using namespace std;
 
 NS_LOG_COMPONENT_DEFINE("DemoFinal");
+
+const char* SOURCE_IP = "10.0.1.1";
+
+Ptr<Packet> __createPacket(const char* sourceIP = SOURCE_IP){
+    // Ptr<Packet> p = Create<Packet>("Hello World");
+    Ptr<Packet> p = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
+
+    ns3::Ipv4Header ipv4Header;
+    Ipv4Address sourceAddress = Ipv4Address(sourceIP);
+    sourceAddress.CombineMask(Ipv4Mask("255.255.0.0"));
+
+    Ipv4Address destinationAddress = Ipv4Address("10.0.2.1");
+    destinationAddress.CombineMask(Ipv4Mask("255.255.1.0"));
+
+    ipv4Header.SetSource(sourceAddress); // Set the source IP address
+    ipv4Header.SetDestination(destinationAddress); // Set the destination IP address
+
+    UdpHeader udpHeader;
+    udpHeader.SetSourcePort(1234);
+    udpHeader.SetDestinationPort(5678);
+
+    p->AddHeader(udpHeader);
+    p->AddHeader(ipv4Header);
+
+    return p;
+}
 
 void testSourceIPAdress(Ptr<Packet> p1){
     UdpHeader udpHeader;
@@ -114,7 +141,7 @@ void testDestinationPortNumber(Ptr<Packet> p1){
 void testProtocolNumber(Ptr<Packet> p1){
 
     ns3::Ipv4Header ipv4Header;
-    ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
+    ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1/300")); // Set the source IP address
     ipv4Header.SetDestination(ns3::Ipv4Address("10.0.0.2")); // Set the destination IP address
     ipv4Header.SetProtocol(8);
 
@@ -130,27 +157,13 @@ void testProtocolNumber(Ptr<Packet> p1){
 }
 
 
-// void testSourceMask(Ptr<Packet> p1){
-//     UdpHeader udpHeader;
-//     udpHeader.SetSourcePort(1234);
-//     udpHeader.SetDestinationPort(5678);
-//     p1->AddHeader(udpHeader);
+void testSourceMask(Ptr<Packet> p1){
+    SourceIPMask *f1 = new SourceIPMask();
+    f1->setValue(Ipv4Address("10.0.1.1"), Ipv4Mask("255.255.1.0"));
 
-//     // const char* mask = "/100";
-//     // Ipv4Mask ipv4mask = Ipv4Mask(mask);
-//     // Ipv4Mask ipMask = Ipv4Mask("255.255.255.0");
-//     Ipv4Header ipv4Header;
-//     ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1/100")); // Set the source IP address
-//     ipv4Header.SetDestination(ns3::Ipv4Address("10.0.0.2/400")); // Set the destination IP address
-
-//     p1->AddHeader(ipv4Header);
-
-//     SourceMask *f1 = new SourceMask();
-//     f1->setValue(Ipv4Mask(300));
-
-//     std::cout << "testSourceMask: ";
-//     std::cout << (f1->match(p1) == false) << std::endl;
-// }
+    std::cout << "testSourceMask: ";
+    std::cout << (f1->match(p1) == true) << std::endl;
+}
 
 void testFilterFail(Ptr<Packet> p1){
     UdpHeader udpHeader;
@@ -283,6 +296,67 @@ void TestTCPass(Ptr<Packet> p1) {
 
 }
 
+
+bool testSPQ(){
+    /*
+        1. Create Source packets with two different Applications
+        2. Create Destination IP Address
+        3. Create filters for those two applications
+        4. Create a new Filter Container for both of those
+        5. Create Traffic Class with those two filters
+        6. Pass that Traffic class to SPQ
+        7. Check if the packets are enqueued in the correct order
+    */
+
+    // 1. Create Source packets with two different Applications
+
+    // Packets for queue 1
+    Ptr<Packet> p_1_1 = __createPacket();
+    Ptr<Packet> p_1_2 = __createPacket();
+    Ptr<Packet> p_1_3 = __createPacket();
+
+    // 2. Create Destination IP Address
+    // Packet for queue 2
+    const char * source_ip_two = "10.2.2.2";
+    Ptr<Packet> p_2_1 = __createPacket(source_ip_two);
+    Ptr<Packet> p_2_2 = __createPacket(source_ip_two);
+    Ptr<Packet> p_2_3 = __createPacket(source_ip_two);
+
+    // 3. Create filters for those two applications
+    // Creating Source IP Filters for both the queues
+
+    SourceIPAddress *f1 = new SourceIPAddress();
+    f1->setValue(Ipv4Address(SOURCE_IP));
+
+    SourceIPAddress *f2 = new SourceIPAddress();
+    f2->setValue(Ipv4Address(source_ip_two));
+
+    // 4. Create a new Filter Container for both of those
+
+    FilterContainer *filter1 = new FilterContainer();
+    filter1->addElement(f1);
+
+    FilterContainer *filter2 = new FilterContainer();
+    filter2->addElement(f2);
+
+
+    // 5. Create Traffic Class with those two filters
+    TrafficClass *t1 = new TrafficClass();
+    t1->AddFilter(filter1);
+
+    TrafficClass *t2 = new TrafficClass();
+    t2->AddFilter(filter2);
+
+    // 6. Pass that Traffic class to SPQ
+    SPQ *spq = new SPQ();
+
+
+
+
+
+   return false;
+}
+
 int main (int argc, char *argv[])
 {
     CommandLine cmd (__FILE__);
@@ -290,14 +364,16 @@ int main (int argc, char *argv[])
 
     Ptr<Packet> p1 = Create<Packet> (100);
 
-    testSourceIPAdress(p1);
-    testFilterFail(Create<Packet> (100));
-    testFilterPass(Create<Packet> (100));
-    testSourcePortNumber(Create<Packet> (100));
-    testDestinationPortNumber(Create<Packet> (100));
-    testProtocolNumber(Create<Packet> (100));
-    // testSourceMask(Create<Packet> (100));
-    TestTCPass(Create<Packet> (100));
+    // testSourceIPAdress(p1);
+    // testFilterFail(Create<Packet> (100));
+    // testFilterPass(Create<Packet> (100));
+    // testSourcePortNumber(Create<Packet> (100));
+    // testDestinationPortNumber(Create<Packet> (100));
+    // testProtocolNumber(Create<Packet> (100));
+    // TestTCPass(Create<Packet> (100));
+
+    // testSourceMask(__createPacket());
+    // TestTCPass(Create<Packet> (100));
 
   return 0;
 }

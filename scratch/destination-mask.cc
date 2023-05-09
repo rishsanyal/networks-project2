@@ -5,12 +5,18 @@
 using namespace ns3;
 using namespace std;
 
-class DestinationMask: public FilterElement {
+class DestinationIPMask: public FilterElement {
     private:
-        Ipv4Mask value;    
+        Ipv4Mask value;
+        Ipv4Address address;
     public:
-            
-        DestinationMask() { }
+
+        DestinationIPMask() { }
+
+        void setValue(Ipv4Address address, Ipv4Mask value){
+            this->value = value;
+            this->address = address;
+        }
 
         bool match(Ptr<Packet>& p) {
             Ipv4Header header;

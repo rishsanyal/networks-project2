@@ -35,7 +35,7 @@ class SPQ: public DiffServ {
     }
 
     Ptr<Packet> Dequeue() {
-    
+
       // TODO: Check which queue to dequeue from.
             // Unsure what the queue should be.
             for(int i = 0; i < this->q_class.size(); i++){
@@ -68,7 +68,7 @@ class SPQ: public DiffServ {
         }
       }
       return nullptr;
-    } 
+    }
 
     uint32_t Classify(Ptr<Packet> p){
             // TODO: Understand what the schdule method is used for.

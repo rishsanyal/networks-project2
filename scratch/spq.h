@@ -2,7 +2,7 @@
 #define SPQ_H
 
 #include <fstream>
-#include<diffserv.h>
+#include "diffserv.h"
 #include "traffic-class.h"
 #include <nlohmann/json.hpp>
 

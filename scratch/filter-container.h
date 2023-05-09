@@ -9,9 +9,9 @@ using namespace ns3;
 using namespace std;
 namespace ns3 {
 
-  class FilterContainer {
+  class FilterContainer: public Object{
     public:
-      FilterContainer();
+      FilterContainer() {};
       bool match(const Ptr<Packet> p);
 
       void addElement(FilterElement* element);
@@ -20,6 +20,6 @@ namespace ns3 {
       vector<FilterElement*> elements;
   };
 
-}
+};
 
 #endif /* FILTER_H */
