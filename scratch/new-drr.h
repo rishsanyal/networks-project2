@@ -91,19 +91,8 @@ Ptr<const ns3::Packet> NewDRRQueue::Peek() const{
 }
 
 Ptr<ns3::Packet> NewDRRQueue::Schedule(){
-    // TODO: Implement
-
     int currPacketSize;
-
     vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
-
-    // cout << "weightTracker" << weightTracker << endl;
-
-    for (int i = 0; i < weightTracker.size(); i++) {
-        cout << i << ": " << weightTracker[i] <<endl;
-    }
-    // weightTracker
-    // int currentQueueIndex = 0;
 
     while (true) {
         if (trafficClasses[currentQueueIndex]->isEmpty()) {
@@ -113,19 +102,17 @@ Ptr<ns3::Packet> NewDRRQueue::Schedule(){
 
         else{
             currPacketSize = trafficClasses[currentQueueIndex]->PeekSize();
-
             if (currPacketSize <= weightTracker[currentQueueIndex]) {
                 weightTracker[currentQueueIndex] -= currPacketSize;
                 break;
             }
 
-            if (currPacketSize > weightTracker[currentQueueIndex]) {
+            else if (currPacketSize > weightTracker[currentQueueIndex]) {
                 weightTracker[currentQueueIndex] += trafficClasses[currentQueueIndex]->GetWeight();
                 currentQueueIndex = (currentQueueIndex + 1) % noOfQueues;
             }
         }
     }
-
 
     return DequeueFromIndex(currentQueueIndex);
 }

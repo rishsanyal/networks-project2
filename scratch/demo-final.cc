@@ -41,6 +41,8 @@
 #include "new-spq.h"
 #include "new-drr.h"
 
+#include <string>
+
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
 // #include "temp-queue.h"
@@ -58,9 +60,13 @@ using namespace std;
 
 const char* SOURCE_IP = "10.0.1.1";
 
-Ptr<ns3::Packet> __createPacket(const char* msg, const char* sourceIP = SOURCE_IP){
+Ptr<ns3::Packet> __createPacket(string msg, const char* sourceIP = SOURCE_IP){
+
+    char* tempMessage = new char[msg.length() + 1];
+    strcpy(tempMessage, msg.c_str());
+
     // Ptr<ns3::Packet> p = Create<ns3::Packet>("Hello World");
-    Ptr<ns3::Packet> p = Create<ns3::Packet> (reinterpret_cast<const uint8_t*> ("Hello"), 5);
+    Ptr<ns3::Packet> p = Create<ns3::Packet> (reinterpret_cast<const uint8_t*>(tempMessage), msg.length() + 1);
 
     ns3::Ipv4Header ipv4Header;
     Ipv4Address sourceAddress = Ipv4Address(sourceIP);
@@ -422,24 +428,31 @@ bool testDRR(){
         7. Check if the packets are enqueued in the correct order
     */
 
+
+    // string temp1 = string s(n, 'a');
+    // cout << temp1 << endl;
+
+    std::string a(6, 'a');
+    std::string b(11, 'a');
+    std::string c(11, 'a');
+
     // 1. Create Source packets with two different Applications
-
     // Packets for queue 1
-    Ptr<ns3::Packet> p_1_1 = __createPacket("123456789", SOURCE_IP);
-    cout << p_1_1->GetUid() << endl;
+    Ptr<ns3::Packet> p_1_1 = __createPacket(a, SOURCE_IP);
+    cout << p_1_1->GetUid() << ": " << p_1_1->GetSize() << endl;
 
-    Ptr<ns3::Packet> p_1_2 = __createPacket("p_1_2--2123456789111232413312", SOURCE_IP);
-    cout << p_1_2->GetUid() << endl;
-    Ptr<ns3::Packet> p_1_3 = __createPacket("p_1_3", SOURCE_IP);
+    Ptr<ns3::Packet> p_1_2 = __createPacket(b, SOURCE_IP);
+    cout << p_1_2->GetUid() << ": " << p_1_2->GetSize() << endl;
+    // Ptr<ns3::Packet> p_1_3 = __createPacket("p_1_3", SOURCE_IP);
 
     // 2. Create Destination IP Address
     // ns3::Packet for queue 2
     const char * source_ip_two = "10.2.2.2";
-    Ptr<ns3::Packet> p_2_1 = __createPacket("123", source_ip_two);
-    cout << p_2_1->GetUid() << endl;
+    Ptr<ns3::Packet> p_2_1 = __createPacket(c, source_ip_two);
+    cout << p_2_1->GetUid() << ": " << p_2_1->GetSize() << endl;
 
-    Ptr<ns3::Packet> p_2_2 = __createPacket("p_2_2", source_ip_two);
-    Ptr<ns3::Packet> p_2_3 = __createPacket("p_2_3", source_ip_two);
+    // Ptr<ns3::Packet> p_2_2 = __createPacket("p_2_2", source_ip_two);
+    // Ptr<ns3::Packet> p_2_3 = __createPacket("p_2_3", source_ip_two);
 
     // 3. Create filters for those two applications
     // Creating Source IP Filters for both the queues
@@ -464,12 +477,12 @@ bool testDRR(){
     // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
     // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
     NewTrafficClass *t1 = new NewTrafficClass(
-        10, 10, 1, 0, false
+        10, 10, 35, 0, false
     );
     t1->AddFilter(filter1);
 
     NewTrafficClass *t2 = new NewTrafficClass(
-        10, 10, 3, 0, false
+        10, 10, 40, 0, false
     );
     t2->AddFilter(filter2);
 
