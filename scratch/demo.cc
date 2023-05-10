@@ -26,7 +26,7 @@
 #include "ns3/udp-header.h"
 // #include "ns3/new-queue.h"
 #include "twoQueue.h"
-#include "spq.h"
+#include "new-spq.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -110,7 +110,8 @@ main (int argc, char *argv[])
   // tch.SetRootQueueDisc ("TwoQueues");
   // tch.Install (devices1);
 
-  Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
+  Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
+  // Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
     // We tell it to make 2 queues, one w low-pri, one w high-pri
 
   Ptr<Node> firstNode = n1;
@@ -140,39 +141,91 @@ main (int argc, char *argv[])
   // middleDevice->SetQueue(myQueue);
 
   // Set up the UdpEchoServer
-  UdpEchoServerHelper echoServer (10000);
+  // UdpEchoServerHelper echoServer (10000);
 
-  ApplicationContainer serverApps = echoServer.Install (n2);
-  serverApps.Start (Seconds (1.0));
-  serverApps.Stop (Seconds (10.0));
+  // BulkSendHelper sender("ns3::UdpSocketFactory", InetSocketAddress(interfaces1.GetAddress(0), 10000));
+  // sender.SetAttribute("MaxBytes", UintegerValue(50));
+
+  // ApplicationContainer serverApps = sender.Install (n0);
+  // serverApps.Start (Seconds (1.0));
+  // serverApps.Stop (Seconds (10.0));
+
+
+  // // Set up the UDP receiver
+  // UdpServerHelper receiver(10000);
+
+  // ApplicationContainer receiverApp = receiver.Install(nodes.Get(2));
+  // receiverApp.Start(Seconds(0.0));
+  // receiverApp.Stop(Seconds(10.0));
+
+
+
+
+    // NS_LOG_INFO("Create UdpServer application on node 1.");
+    uint16_t port = 4000;
+
+    UdpServerHelper server(port);
+    ApplicationContainer apps = server.Install(nodes.Get(2));
+    apps.Start(Seconds(1.0));
+    apps.Stop(Seconds(10.0));
+
+    // NS_LOG_INFO("Create UdpClient application on node 0 to send to node 1.");
+    uint32_t MaxPacketSize = 1024;
+    Time interPacketInterval = Seconds(0.05);
+    uint32_t maxPacketCount = 320;
+
+    UdpClientHelper client(interfaces2.GetAddress(1), port);
+    client.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    client.SetAttribute("Interval", TimeValue(interPacketInterval));
+    client.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
+    apps = client.Install(nodes.Get(0));
+    apps.Start(Seconds(2.0));
+    apps.Stop(Seconds(10.0));
+
+    // NS_LOG_INFO("Run Simulation.");
+    Simulator::Run();
+    Simulator::Destroy();
+    // NS_LOG_INFO("Done.");
+
+  // PacketSinkHelper receiver("ns3::UdpSocketFactory", InetSocketAddress(interfaces2.GetAddress(1), 10000));
+  // ApplicationContainer sinkApp = receiver.Install(nodes.Get(1));
+  // sinkApp.Start(Seconds(0.0));
+  // sinkApp.Stop(Seconds(10.0));
+
+  // Ptr<BulkSendApplication> source = DynamicCast<BulkSendApplication>(serverApps.Get(0));
+  // Ptr<PacketSink> sink = DynamicCast<PacketSink>(sinkApp.Get(0));
+
+  // source->TraceConnectWithoutContext("Tx", MakeCallback(&BulkSendBasicTestCase::SendTx, this));
+  // sink->TraceConnectWithoutContext("Rx", MakeCallback(&BulkSendBasicTestCase::ReceiveRx, this));
+
 
   // Set up the UdpEchoClient applications with different ports
-  UdpEchoClientHelper echoClient1 (interfaces2.GetAddress (1), 10000);
-  echoClient1.SetAttribute ("MaxPackets", UintegerValue (10000));
-  echoClient1.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient1.SetAttribute ("PacketSize", UintegerValue (1024));
+  // UdpEchoClientHelper echoClient1 (interfaces2.GetAddress (1), 10000);
+  // echoClient1.SetAttribute ("MaxPackets", UintegerValue (10000));
+  // echoClient1.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
+  // echoClient1.SetAttribute ("PacketSize", UintegerValue (1024));
 
-  UdpEchoClientHelper echoClient2 (interfaces2.GetAddress (1), 20000);
-  echoClient2.SetAttribute ("MaxPackets", UintegerValue (10000));
-  echoClient2.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient2.SetAttribute ("PacketSize", UintegerValue (1024));
+  // UdpEchoClientHelper echoClient2 (interfaces2.GetAddress (1), 20000);
+  // echoClient2.SetAttribute ("MaxPackets", UintegerValue (10000));
+  // echoClient2.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
+  // echoClient2.SetAttribute ("PacketSize", UintegerValue (1024));
 
-  ApplicationContainer clientApps1 = echoClient1.Install (n0);
-  clientApps1.Start (Seconds (2.0));
-  clientApps1.Stop (Seconds (10.0));
+  // ApplicationContainer clientApps1 = echoClient1.Install (n0);
+  // clientApps1.Start (Seconds (2.0));
+  // clientApps1.Stop (Seconds (10.0));
 
-  ApplicationContainer clientApps2 = echoClient2.Install (n0);
-  clientApps2.Start (Seconds (2.0));
-  clientApps2.Stop (Seconds (10.0));
+  // ApplicationContainer clientApps2 = echoClient2.Install (n0);
+  // clientApps2.Start (Seconds (2.0));
+  // clientApps2.Stop (Seconds (10.0));
 
-  echoClient1.SetFill(clientApps1.Get(0), "Hello World");
+  // echoClient1.SetFill(clientApps1.Get(0), "Hello World");
 
-  // Enable generating the pcap files
-  clientToRouter.EnablePcapAll("client-router");
-  routerToServer.EnablePcapAll("router-server");
+  // // Enable generating the pcap files
+  // clientToRouter.EnablePcapAll("client-router");
+  // routerToServer.EnablePcapAll("router-server");
 
-  Simulator::Run ();
-  Simulator::Destroy ();
+  // Simulator::Run ();
+  // Simulator::Destroy ();
 
   return 0;
 }

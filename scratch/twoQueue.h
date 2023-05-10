@@ -87,6 +87,7 @@ Ptr<Packet> TwoQueues::Remove (void)
 bool TwoQueues::Enqueue(Ptr<Packet> item)
 {
 
+  cout << "Enqueue" << endl;
   Ptr<Packet> copy = item->Copy();
   // std::cout << "Enqueue" << std::endl;
   // UdpHeader udpHdr;

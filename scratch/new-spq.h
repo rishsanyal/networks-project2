@@ -15,6 +15,14 @@ namespace ns3
 
 class NewPriQueue : public NewDiffServ
 {
+
+
+
+enum QueueMode {
+    ByteMode, Packet
+};
+
+
 public:
     NewPriQueue();
     // ~NewPriQueue() override;

@@ -26,6 +26,11 @@ namespace ns3
 class NewDiffServ: public Queue<ns3::Packet> {
 public:
 
+
+    enum QueueMode {
+        ByteMode, Packet
+    };
+
     NewDiffServ();
     // ~NewDiffServ() override;
 
@@ -48,8 +53,8 @@ public:
     vector<NewTrafficClass*> GetTrafficClasses();
 
 
-    void SetMode(QueueMode mode);
-    QueueMode GetMode();
+    void SetMode(NewDiffServ::QueueMode mode);
+    NewDiffServ::QueueMode GetMode();
 
 
     // For key we know the index of the vector
@@ -62,14 +67,14 @@ private:
     Ptr<ns3::Packet> DoRemove();
     Ptr<const ns3::Packet> DoPeek() const;
 
-    QueueMode m_mode;
+    NewDiffServ::QueueMode m_mode;
     vector<NewTrafficClass*> q_class;
 };
 
 
 NewDiffServ::NewDiffServ() {
     // NS_LOG_DEBUG("NewDiffServ");
-    m_mode = QueueMode::Packet;
+    m_mode = NewDiffServ::QueueMode::Packet;
     q_class = vector<NewTrafficClass*>();
 }
 
@@ -105,7 +110,7 @@ void NewDiffServ::SetMode(QueueMode mode) {
     m_mode = mode;
 }
 
-QueueMode NewDiffServ::GetMode() {
+NewDiffServ::QueueMode NewDiffServ::GetMode() {
     // NS_LOG_FUNCTION(this);
     return m_mode;
 }
