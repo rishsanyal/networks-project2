@@ -359,12 +359,12 @@ bool testSPQ(){
     // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
     // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
     NewTrafficClass *t1 = new NewTrafficClass(
-        10, 10, 0.0, 2, false
+        10, 10000, 0.0, 2, false
     );
     t1->AddFilter(filter1);
 
     NewTrafficClass *t2 = new NewTrafficClass(
-        10, 10, 0.0, 2, false
+        10, 10000, 0.0, 1, false
     );
     t2->AddFilter(filter2);
 
@@ -381,7 +381,8 @@ bool testSPQ(){
     spq->Enqueue(p_1_1);
     spq->Enqueue(p_2_1);
     spq->Enqueue(p_1_2);
-
+    spq->Enqueue(p_2_2);
+    spq->Enqueue(p_2_3);
 
     // const char * source_ip_three = "10.3.2.1";
     // Ptr<ns3::Packet> p_3_1 = __createPacket("p_2_1", source_ip_three);
@@ -396,6 +397,21 @@ bool testSPQ(){
         cout << p1->GetUid() << endl;
     }
 
+
+    p1 = spq->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
+
+
+    p1 = spq->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
 
     p1 = spq->Dequeue();
     if (p1 == NULL) {
@@ -451,8 +467,8 @@ bool testDRR(){
     Ptr<ns3::Packet> p_2_1 = __createPacket(c, source_ip_two);
     cout << p_2_1->GetUid() << ": " << p_2_1->GetSize() << endl;
 
-    // Ptr<ns3::Packet> p_2_2 = __createPacket("p_2_2", source_ip_two);
-    // Ptr<ns3::Packet> p_2_3 = __createPacket("p_2_3", source_ip_two);
+    Ptr<ns3::Packet> p_2_2 = __createPacket("p_2_2", source_ip_two);
+    Ptr<ns3::Packet> p_2_3 = __createPacket("p_2_3", source_ip_two);
 
     // 3. Create filters for those two applications
     // Creating Source IP Filters for both the queues
@@ -477,12 +493,12 @@ bool testDRR(){
     // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
     // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
     NewTrafficClass *t1 = new NewTrafficClass(
-        10, 10, 35, 0, false
+        10, 10000, 35, 0, false
     );
     t1->AddFilter(filter1);
 
     NewTrafficClass *t2 = new NewTrafficClass(
-        10, 10, 40, 0, false
+        10, 10000, 40, 0, false
     );
     t2->AddFilter(filter2);
 
@@ -499,7 +515,8 @@ bool testDRR(){
     drr->Enqueue(p_1_1);
     drr->Enqueue(p_2_1);
     drr->Enqueue(p_1_2);
-
+    drr->Enqueue(p_2_2);
+    drr->Enqueue(p_2_3);
 
     // const char * source_ip_three = "10.3.2.1";
     // Ptr<ns3::Packet> p_3_1 = __createPacket("p_2_1", source_ip_three);
@@ -522,6 +539,20 @@ bool testDRR(){
         cout << p1->GetUid() << endl;
     }
 
+
+    p1 = drr->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
+
+    p1 = drr->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
 
     p1 = drr->Dequeue();
     if (p1 == NULL) {
