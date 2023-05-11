@@ -33,6 +33,8 @@
 #include "source-ip-address.h"
 #include "destination-ip-address.h"
 
+#include "source-ip-mask.h"
+#include "source-port-number.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -135,6 +137,16 @@ main (int argc, char *argv[])
   SourceIPAddress *f1 = new SourceIPAddress();
   f1->setValue(ns3::Ipv4Address("10.1.1.1"));
 
+  SourcePortNumber *f1sp = new SourcePortNumber();
+  f1sp->setValue(9);
+
+  SourceIPMask *f1sm = new SourceIPMask();
+  f1m->setValue(Ipv4Address("10.0.1.1"), Ipv4Mask("255.255.255.0"));
+
+  SourceIPMask *f2sm = new SourceIPMask();
+  f2m->setValue(Ipv4Address("10.0.2.2"), Ipv4Mask("255.255.255.0"));
+
+
   SourceIPAddress *f2 = new SourceIPAddress();
   f2->setValue(ns3::Ipv4Address("10.1.2.2"));
 
@@ -144,15 +156,23 @@ main (int argc, char *argv[])
   DestinationIPAddress *d2 = new DestinationIPAddress();
   d2->setValue(ns3::Ipv4Address("10.1.2.5"));
 
+  SourcePortNumber *f2sp = new SourcePortNumber();
+  f2sp->setValue(9);
+
+
   // 4. Create a new Filter Container for both of those
 
   FilterContainer *filter1 = new FilterContainer();
   filter1->addElement(f1);
   filter1->addElement(d1);
+  filter1->addElement(f1sm);
+  filter1->addElement(f1sp);
 
   FilterContainer *filter2 = new FilterContainer();
   filter2->addElement(f2);
   filter2->addElement(d2);
+  filter2->addElement(f2sm);
+  filter2->addElement(f2sp);
 
 
   // 5. Create Traffic Class with those two filters
@@ -196,7 +216,7 @@ main (int argc, char *argv[])
 
   firstDevice->SetQueue(myFirstQueue);
   // cout << "Debug this" << endl;
-    
+
 
   // Address addy = n2->GetDevice(1)->GetAddress();
   // std::cout << addy << std::endl;

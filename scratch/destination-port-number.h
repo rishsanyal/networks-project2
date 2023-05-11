@@ -1,20 +1,56 @@
-#ifndef DESTINATION_PORT_NUMBER_H
-#define DESTINATION_PORT_NUMBER_H
+#ifndef SOURCE_PORTNUMBER_H
+#define SOURCE_PORTNUMBER_H
 
 #include "ns3/core-module.h"
 #include "ns3/queue.h"
 #include "filter-element.h"
+#include "ns3/udp-header.h"
+#include "ns3/ppp-header.h"
+#include "ns3/ipv4-header.h"
 
 using namespace ns3;
 using namespace std;
 
-class DestinationPortNumber: public FilterElement {
+namespace ns3 {
+class DestinationPortNumber : public FilterElement {
     public:
         DestinationPortNumber();
-        void setValue(Ipv4Address value);
+        void setValue(uint32_t value);
         bool match(Ptr<Packet> p) override;
+
     private:
-        uint32_t value;
+            uint32_t value;
+
 };
+
+DestinationPortNumber::DestinationPortNumber() {}
+
+void
+DestinationPortNumber::setValue(uint32_t value){
+    this->value = value;
+}
+
+bool
+DestinationPortNumber::match(Ptr<Packet> p) {
+
+    Ptr<ns3::Packet> tempPacket = p->Copy();
+
+    PppHeader pppHeader;
+    tempPacket->RemoveHeader(pppHeader);
+
+    Ipv4Header ipHeader;
+    tempPacket->RemoveHeader(ipHeader);
+
+    UdpHeader udpHeader;
+    tempPacket->RemoveHeader(udpHeader);
+
+    if(udpHeader.GetDestinationPort() == value){
+        return true;
+    }
+
+    return false;
+}
+
+}
 
 #endif
