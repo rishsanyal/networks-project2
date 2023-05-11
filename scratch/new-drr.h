@@ -75,7 +75,7 @@ bool NewDRRQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewDRRQueue::Dequeue(){
-    cout << "NewDRRQueue::Dequeue" << endl;
+    std::cout << "NewDRRQueue::Dequeue" << std::endl;
 
     return Schedule();
 }

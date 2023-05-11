@@ -27,6 +27,7 @@
 // #include "ns3/new-queue.h"
 #include "twoQueue.h"
 #include "new-spq.h"
+#include "new-drr.h"
 #include "filter-container.h"
 #include "filter-element.h"
 #include "source-ip-address.h"
@@ -114,53 +115,7 @@ main (int argc, char *argv[])
   // tch.Install (devices1);
 
   // Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
-
-
-    SourceIPAddress *f1 = new SourceIPAddress();
-    f1->setValue(ns3::Ipv4Address("10.1.1.1"));
-
-    SourceIPAddress *f2 = new SourceIPAddress();
-    f2->setValue(ns3::Ipv4Address("10.1.2.2"));
-
-    // 4. Create a new Filter Container for both of those
-
-    FilterContainer *filter1 = new FilterContainer();
-    filter1->addElement(f1);
-
-    FilterContainer *filter2 = new FilterContainer();
-    filter2->addElement(f2);
-
-
-    // 5. Create Traffic Class with those two filters
-
-    // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
-    // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
-    NewTrafficClass *t1 = new NewTrafficClass(
-        10, 10000, 0.0, 2, false
-    );
-    t1->AddFilter(filter1);
-
-    NewTrafficClass *t2 = new NewTrafficClass(
-        10, 10000, 0.0, 1, false
-    );
-    t2->AddFilter(filter2);
-
-    // 6. Pass that Traffic class to SPQ
-    NewPriQueue *myFirstQueue = new NewPriQueue();
-
-    myFirstQueue->AddTrafficClass(t1);
-    myFirstQueue->AddTrafficClass(t2);
-    // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
-
-    myFirstQueue->test();
-
-  // Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
-    // We tell it to make 2 queues, one w low-pri, one w high-pri
-
-  Ptr<Node> firstNode = n1;
-  Ptr<PointToPointNetDevice> firstDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-
-  firstDevice->SetQueue(myFirstQueue);
+  // firstDevice->SetQueue(myTempQueue);
 
 
   // Assign IPv4 addresses to the devices
@@ -174,6 +129,55 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer interfaces2 = address2.Assign (devices2);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
+
+
+  SourceIPAddress *f1 = new SourceIPAddress();
+  f1->setValue(ns3::Ipv4Address("10.1.1.1"));
+
+  SourceIPAddress *f2 = new SourceIPAddress();
+  f2->setValue(ns3::Ipv4Address("10.1.2.2"));
+
+  // 4. Create a new Filter Container for both of those
+
+  FilterContainer *filter1 = new FilterContainer();
+  filter1->addElement(f1);
+
+  FilterContainer *filter2 = new FilterContainer();
+  filter2->addElement(f2);
+
+
+  // 5. Create Traffic Class with those two filters
+
+  // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
+  // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
+  NewTrafficClass *t1 = new NewTrafficClass(
+      10, 10000, 0.0, 2, false
+  );
+  t1->AddFilter(filter1);
+
+  NewTrafficClass *t2 = new NewTrafficClass(
+      10, 10000, 0.0, 1, false
+  );
+  t2->AddFilter(filter2);
+
+  // 6. Pass that Traffic class to SPQ
+  // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
+  ns3::NewDRRQueue *myFirstQueue = new ns3::NewDRRQueue();
+
+  myFirstQueue->AddTrafficClass(t1);
+  myFirstQueue->AddTrafficClass(t2);
+  // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
+
+  myFirstQueue->test();
+
+  // Ptr<TempQueue<Packet>> myTempQueue = CreateObject<TempQueue<Packet>>();
+    // We tell it to make 2 queues, one w low-pri, one w high-pri
+
+  Ptr<Node> firstNode = n1;
+  Ptr<PointToPointNetDevice> firstDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+
+  firstDevice->SetQueue(myFirstQueue);
 
   // Address addy = n2->GetDevice(1)->GetAddress();
   // std::cout << addy << std::endl;
@@ -208,27 +212,22 @@ main (int argc, char *argv[])
     uint16_t port = 4000;
 
     UdpServerHelper server(port);
-    ApplicationContainer apps = server.Install(nodes.Get(2));
+    ApplicationContainer apps = server.Install(n2);
     apps.Start(Seconds(1.0));
     apps.Stop(Seconds(10.0));
 
     // NS_LOG_INFO("Create UdpClient application on node 0 to send to node 1.");
     uint32_t MaxPacketSize = 1024;
-    Time interPacketInterval = Seconds(0.05);
-    uint32_t maxPacketCount = 320;
+    Time interPacketInterval = Seconds(0.025);
+    uint32_t maxPacketCount = 10;
 
     UdpClientHelper client(interfaces2.GetAddress(1), port);
     client.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
     client.SetAttribute("Interval", TimeValue(interPacketInterval));
     client.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
-    apps = client.Install(nodes.Get(0));
-    apps.Start(Seconds(2.0));
+    apps = client.Install(n0);
+    apps.Start(Seconds(1.0));
     apps.Stop(Seconds(10.0));
-
-    // NS_LOG_INFO("Run Simulation.");
-    Simulator::Run();
-    Simulator::Destroy();
-    // NS_LOG_INFO("Done.");
 
   // PacketSinkHelper receiver("ns3::UdpSocketFactory", InetSocketAddress(interfaces2.GetAddress(1), 10000));
   // ApplicationContainer sinkApp = receiver.Install(nodes.Get(1));
@@ -264,11 +263,11 @@ main (int argc, char *argv[])
   // echoClient1.SetFill(clientApps1.Get(0), "Hello World");
 
   // // Enable generating the pcap files
-  // clientToRouter.EnablePcapAll("client-router");
-  // routerToServer.EnablePcapAll("router-server");
+  clientToRouter.EnablePcapAll("client-router");
+  routerToServer.EnablePcapAll("router-server");
 
-  // Simulator::Run ();
-  // Simulator::Destroy ();
+  Simulator::Run ();
+  Simulator::Destroy ();
 
   return 0;
 }

@@ -91,6 +91,7 @@ bool NewDiffServ::Enqueue(Ptr<ns3::Packet> item) {
 }
 
 Ptr<ns3::Packet> NewDiffServ::Dequeue() {
+    cout << "New DIffServ Deque" << endl;
     // NS_LOG_FUNCTION(this);
     return DoDequeue();
 }

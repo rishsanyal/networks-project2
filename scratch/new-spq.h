@@ -27,13 +27,13 @@ public:
     NewPriQueue();
     // ~NewPriQueue() override;
 
-    bool Enqueue(Ptr<ns3::Packet> p);
-    Ptr<ns3::Packet> Dequeue();
-    Ptr<ns3::Packet> Remove();
-    Ptr<const ns3::Packet> Peek() const;
+    bool Enqueue(Ptr<ns3::Packet> p) override;
+    Ptr<ns3::Packet> Dequeue() override;
+    Ptr<ns3::Packet> Remove() override;
+    Ptr<const ns3::Packet> Peek() const override;
 
-    Ptr<ns3::Packet> Schedule();
-    uint32_t Classify(Ptr<ns3::Packet> p);
+    Ptr<ns3::Packet> Schedule() override;
+    uint32_t Classify(Ptr<ns3::Packet> p) override;
 
     void test();
 
@@ -65,7 +65,7 @@ NewPriQueue::NewPriQueue() {
 }
 
 bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
-    // cout << "NewPriQueue::Enqueue" << endl;
+    cout << "NewPriQueue::Enqueue" << endl;
 
     int vectorIndex = Classify(p);
 
@@ -83,7 +83,7 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewPriQueue::Dequeue(){
-    // cout << "NewPriQueue::Dequeue" << endl;
+    cout << "NewPriQueue::Dequeue" << endl;
 
     return Schedule();
 }
@@ -149,7 +149,10 @@ Ptr<ns3::Packet> NewPriQueue::DoRemove(){
 
 Ptr<const ns3::Packet> NewPriQueue::DoPeek() const{
     cout << "NewPriQueue::DoPeek" << endl;
-    return nullptr;
+    // return nullptr;
+
+    Ptr<const ns3::Packet> item = NULL;
+    return item;
 }
 
 void NewPriQueue::test(){
