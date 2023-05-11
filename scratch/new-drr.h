@@ -70,7 +70,7 @@ bool NewDRRQueue::Enqueue(Ptr<ns3::Packet> p){
     }
 
     bool enqueueStatus = EnqueueAtIndex(p, vectorIndex);
-
+    
     return enqueueStatus;
 }
 

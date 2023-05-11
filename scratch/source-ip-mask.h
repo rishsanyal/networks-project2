@@ -8,6 +8,8 @@
 using namespace ns3;
 using namespace std;
 
+namespace ns3{
+
 class SourceIPMask : public FilterElement {
     private:
         Ipv4Mask value;
@@ -18,5 +20,35 @@ class SourceIPMask : public FilterElement {
         void setValue(Ipv4Address address, Ipv4Mask value);
         bool match(Ptr<Packet> p) override;
 };
+
+SourceIPMask::SourceIPMask() {}
+
+
+void SourceIPMask::setValue(Ipv4Address address, Ipv4Mask value){
+    this->value = value;
+    this->address = address;
+}
+
+bool SourceIPMask::match(Ptr<Packet> p){
+
+    Ptr<ns3::Packet> tempPacket = p->Copy();
+
+    PppHeader pppHeader;
+    tempPacket->RemoveHeader(pppHeader);
+
+    Ipv4Header ipHeader;
+    tempPacket->RemoveHeader(ipHeader);
+    
+    UdpHeader udpHeader;
+    tempPacket->RemoveHeader(udpHeader);
+
+    if (this->value.IsMatch(ipHeader.GetSource(), this->address)){
+        return true;
+    }
+
+    return false;
+}
+
+}
 
 #endif

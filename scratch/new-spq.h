@@ -69,13 +69,11 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
 
     int vectorIndex = Classify(p);
 
-    // cout << "Enqueue status: " << vectorIndex << endl;
     if (vectorIndex == -1) {
         return false;
     }
 
     bool enqueueStatus = EnqueueAtIndex(p, vectorIndex);
-    // cout << "Enqueue status: " << enqueueStatus << endl;
 
     return enqueueStatus;
 }
