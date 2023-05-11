@@ -27,7 +27,9 @@ namespace ns3
 class NewDiffServ: public Queue<Packet> {
 public:
 
-
+    /*
+        TODO: Make QueueMode ENUM common for all files.
+    */
     enum QueueMode {
         ByteMode, Packet
     };
@@ -69,14 +71,13 @@ private:
     Ptr<const ns3::Packet> DoPeek() const;
 
     NewDiffServ::QueueMode m_mode;
-    vector<NewTrafficClass*> q_class;
+    vector<NewTrafficClass*> q_class = vector<NewTrafficClass*>();
 };
 
 
 NewDiffServ::NewDiffServ() {
     // NS_LOG_DEBUG("NewDiffServ");
     m_mode = NewDiffServ::QueueMode::Packet;
-    q_class = vector<NewTrafficClass*>();
 }
 
 bool NewDiffServ::Enqueue(Ptr<ns3::Packet> item) {
@@ -160,8 +161,6 @@ bool NewDiffServ::DoEnqueue(Ptr<ns3::Packet> p) {
 
 bool NewDiffServ::EnqueueAtIndex(Ptr<ns3::Packet> p, int vectorIndex){
     // NS_LOG_FUNCTION(this);
-    cout << "Enqueue at index: ";
-    cout << vectorIndex << endl;
 
     return q_class[vectorIndex]->Enqueue(p);;
 }
@@ -183,16 +182,18 @@ int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
 
     for (int i = 0; i < q_class.size(); i++) {
         if (q_class[i]->Match(p) ) {
-            cout << "Matched:" << i << endl;
+            // cout << "Matched:" << i << endl;
             return i;
         }
     }
+
+    cout << "Didn't match anything" << endl;
 
     return -1;
 }
 
 Ptr<ns3::Packet> NewDiffServ::DequeueFromIndex(int vectorIndex) {
-    cout << "Dequeue from index: " << vectorIndex << endl;
+    // cout << "Dequeue from index: " << vectorIndex << endl;
     return q_class[vectorIndex]->Dequeue();
 }
 

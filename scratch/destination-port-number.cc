@@ -6,6 +6,8 @@
 using namespace ns3;
 using namespace std;
 
-class DestinationPortNumber: public FilterElement {
+namespace ns3 {
+    class DestinationPortNumber: public FilterElement {
 
-};
+    };
+}

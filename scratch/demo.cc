@@ -36,6 +36,7 @@
 #include "source-ip-mask.h"
 #include "source-port-number.h"
 #include "destination-ip-mask.h"
+#include "destination-port-number.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -62,9 +63,12 @@ main (int argc, char *argv[])
 
 
   Time::SetResolution (Time::NS);
-  LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
-  LogComponentEnable ("TempQueue", LOG_LEVEL_DEBUG);
+  // LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+  // LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  // LogComponentEnableAll (LOG_PREFIX_TIME);
+  LogComponentEnable ("UdpClient", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpClientHelper", LOG_LEVEL_ALL);
+  // LogComponentEnable("Application", LOG_LEVEL_ALL);
 
   // Create three nodes
   NodeContainer nodes;
@@ -167,6 +171,12 @@ main (int argc, char *argv[])
   DestinationIPMask *d2m = new DestinationIPMask();
   d2m->setValue(Ipv4Address("10.1.1.0"), Ipv4Mask("255.255.255.0"));
 
+  Ipv4Address destAddress("10.2.2.2");
+  DestinationIPAddress *d1dp = new DestinationIPAddress();
+  d1dp->setValue(destAddress);
+
+  DestinationIPAddress *d2dp = new DestinationIPAddress();
+  d2dp->setValue(destAddress);
 
 
   // 4. Create a new Filter Container for both of those
@@ -177,6 +187,7 @@ main (int argc, char *argv[])
   filter1->addElement(f1sm);
   // filter1->addElement(f1sp);
   filter1->addElement(d1m);
+  filter1->addElement(d1dp);
 
   FilterContainer *filter2 = new FilterContainer();
   filter2->addElement(f2);
@@ -184,6 +195,7 @@ main (int argc, char *argv[])
   filter2->addElement(f2sm);
   // filter2->addElement(f2sp);
   filter2->addElement(d2m);
+  filter1->addElement(d2dp);
 
 
   // 5. Create Traffic Class with those two filters
@@ -211,7 +223,7 @@ main (int argc, char *argv[])
   t2->AddFilter(filter2);
   // 6. Pass that Traffic class to SPQ
   // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
-  ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
+  // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
 
   Ptr<NewDRRQueue> myFirstQueue = CreateObject<NewDRRQueue>();
   myFirstQueue->AddTrafficClass(t1);

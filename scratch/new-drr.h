@@ -45,23 +45,41 @@ private:
 
     int noOfQueues;
     vector<int> priorityLevels;
-    vector<NewTrafficClass*> q_class;
+    // vector<NewTrafficClass*> q_class;
     vector<int> weightTracker;
     QueueMode m_mode;
+
+    bool checkEmptyTrafficClasses();
 
     int currentQueueIndex = 0;
 };
 
 NewDRRQueue::NewDRRQueue() {
-    cout << "NewDRRQueue" << endl;
+    // cout << "NewDRRQueue" << endl;
     noOfQueues = 0;
     weightTracker = vector<int>();
-    q_class = vector<NewTrafficClass*>();
+    // q_class = vector<NewTrafficClass*>();
     m_mode = QueueMode::ByteMode; //TODO: Get this from the config file?
 }
 
+/*
+    Return true if all the traffic classes are empty
+*/
+bool
+NewDRRQueue::checkEmptyTrafficClasses(){
+    vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
+
+    for (int i = 0; i < trafficClasses.size(); i++) {
+        if (!trafficClasses[i]->isEmpty()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool NewDRRQueue::Enqueue(Ptr<ns3::Packet> p){
-    cout << "NewDRRQueue::Enqueue" << endl;
+    // cout << "NewDRRQueue::Enqueue" << endl;
 
     int vectorIndex = Classify(p);
 
@@ -70,29 +88,40 @@ bool NewDRRQueue::Enqueue(Ptr<ns3::Packet> p){
     }
 
     bool enqueueStatus = EnqueueAtIndex(p, vectorIndex);
-    
+
     return enqueueStatus;
 }
 
 Ptr<ns3::Packet> NewDRRQueue::Dequeue(){
-    std::cout << "NewDRRQueue::Dequeue" << std::endl;
+    // std::cout << "NewDRRQueue::Dequeue" << std::endl;
 
-    return Schedule();
+    Ptr<ns3::Packet> dequedPacket = Schedule();
+
+    // cout << "Dequeue status: " << (dequedPacket != nullptr) << endl;
+
+    return dequedPacket;
 }
 
 Ptr<ns3::Packet> NewDRRQueue::Remove(){
-    cout << "NewDRRQueue::Remove" << endl;
+    // cout << "NewDRRQueue::Remove" << endl;
     return DoRemove();
 }
 
 Ptr<const ns3::Packet> NewDRRQueue::Peek() const{
-    cout << "NewDRRQueue::Peek" << endl;
+    // cout << "NewDRRQueue::Peek" << endl;
     return DoPeek();
 }
 
 Ptr<ns3::Packet> NewDRRQueue::Schedule(){
+
+    if (checkEmptyTrafficClasses()) {
+        // cout << "NewDRRQueue::Schedule: All traffic classes are empty" << endl;
+        return nullptr;
+    }
+
     int currPacketSize;
     vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
+
 
     while (true) {
         if (trafficClasses[currentQueueIndex]->isEmpty()) {
@@ -114,7 +143,7 @@ Ptr<ns3::Packet> NewDRRQueue::Schedule(){
         }
     }
 
-    cout << "NewDRRQueue::Schedule " << currentQueueIndex << endl;
+    // cout << "NewDRRQueue::Schedule " << currentQueueIndex << endl;
 
     return DequeueFromIndex(currentQueueIndex);
 }
@@ -125,7 +154,7 @@ uint32_t NewDRRQueue::Classify(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewDRRQueue::DoDequeue(){
-    cout << "NewDRRQueue::DoDequeue " << endl;
+    // cout << "NewDRRQueue::DoDequeue " << endl;
 
     return nullptr;
 }
@@ -136,12 +165,12 @@ bool NewDRRQueue::DoEnqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewDRRQueue::DoRemove(){
-    cout << "NewDRRQueue::DoRemove" << endl;
+    // cout << "NewDRRQueue::DoRemove" << endl;
     return nullptr;
 }
 
 Ptr<const ns3::Packet> NewDRRQueue::DoPeek() const{
-    cout << "NewDRRQueue::DoPeek" << endl;
+    // cout << "NewDRRQueue::DoPeek" << endl;
     return nullptr;
 }
 

@@ -24,6 +24,10 @@
 #include "ns3/udp-trace-client.h"
 #include "ns3/uinteger.h"
 
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE("UdpClientHelper");
+
 namespace ns3
 {
 
@@ -65,22 +69,25 @@ UdpServerHelper::GetServer()
     return m_server;
 }
 
-UdpClientHelper::UdpClientHelper()
+UdpClientHelper::UdpClientHelper() : NS_LOG_TEMPLATE_DEFINE("UdpClientHelper")
 {
     m_factory.SetTypeId(UdpClient::GetTypeId());
+    NS_LOG_FUNCTION(this);
 }
 
-UdpClientHelper::UdpClientHelper(Address address, uint16_t port)
+UdpClientHelper::UdpClientHelper(Address address, uint16_t port) : NS_LOG_TEMPLATE_DEFINE("UdpClientHelper")
 {
     m_factory.SetTypeId(UdpClient::GetTypeId());
     SetAttribute("RemoteAddress", AddressValue(address));
     SetAttribute("RemotePort", UintegerValue(port));
+    NS_LOG_FUNCTION(this);
 }
 
-UdpClientHelper::UdpClientHelper(Address address)
+UdpClientHelper::UdpClientHelper(Address address) : NS_LOG_TEMPLATE_DEFINE("UdpClientHelper")
 {
     m_factory.SetTypeId(UdpClient::GetTypeId());
     SetAttribute("RemoteAddress", AddressValue(address));
+    NS_LOG_FUNCTION(this);
 }
 
 void

@@ -28,6 +28,8 @@
 
 #include <stdint.h>
 
+#include "ns3/log.h"
+
 namespace ns3
 {
 /**
@@ -144,6 +146,10 @@ class UdpClientHelper
 
   private:
     ObjectFactory m_factory; //!< Object factory.
+    /**
+    * Declaring Log Template for collecting log data
+    **/
+    NS_LOG_TEMPLATE_DECLARE;
 };
 
 /**
@@ -209,6 +215,10 @@ class UdpTraceClientHelper
 
   private:
     ObjectFactory m_factory; //!< Object factory.
+    /**
+    * Declaring Log Template for collecting log data
+    **/
+    // NS_LOG_TEMPLATE_DECLARE;
 };
 
 } // namespace ns3
