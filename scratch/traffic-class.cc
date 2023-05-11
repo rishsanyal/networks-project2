@@ -48,7 +48,6 @@ using namespace std;
 
         Ptr<Packet> TrafficClass::Dequeue(){
             if (this->m_queue.empty()){
-                cout<< "Queue is empty" << endl;
                 return NULL;
             }
             Ptr<Packet> p = this->m_queue.front();
