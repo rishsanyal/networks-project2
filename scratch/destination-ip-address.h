@@ -34,13 +34,15 @@ bool DestinationIPAddress::match(Ptr<Packet> p){
 
     Ipv4Header ipHeader;
     tempPacket->RemoveHeader(ipHeader);
-    
+
     UdpHeader udpHeader;
     tempPacket->RemoveHeader(udpHeader);
 
     if(ipHeader.GetDestination()==value){
         return true;
     } else {
+        cout << ipHeader.GetDestination() << endl;
+        cout << "DestinationIPAddress: " << this->value << endl;
         return false;
     }
 }

@@ -34,7 +34,7 @@ bool SourceIPAddress::match(Ptr<Packet> p){
 
     Ipv4Header ipHeader;
     tempPacket->RemoveHeader(ipHeader);
-    
+
     UdpHeader udpHeader;
     tempPacket->RemoveHeader(udpHeader);
 
@@ -43,6 +43,9 @@ bool SourceIPAddress::match(Ptr<Packet> p){
         return true;
     } else {
         // 0
+
+        cout << "SourceIPAddress: " << this->value << endl;
+
         return false;
     }
 }

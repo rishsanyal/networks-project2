@@ -182,7 +182,6 @@ int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
 
 
     for (int i = 0; i < q_class.size(); i++) {
-        cout << "Match:" << q_class[i] << endl;
         if (q_class[i]->Match(p) ) {
             cout << "Matched:" << i << endl;
             return i;

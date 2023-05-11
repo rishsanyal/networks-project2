@@ -35,6 +35,7 @@
 
 #include "source-ip-mask.h"
 #include "source-port-number.h"
+#include "destination-ip-mask.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -127,7 +128,7 @@ main (int argc, char *argv[])
   address1.SetBase ("10.1.1.0", "255.255.255.0");
 
   Ipv4AddressHelper address2;
-  address2.SetBase ("10.1.2.0", "255.255.255.0");
+  address2.SetBase ("10.2.2.0", "255.255.255.0");
 
   Ipv4InterfaceContainer interfaces1 = address1.Assign (devices1);
   Ipv4InterfaceContainer interfaces2 = address2.Assign (devices2);
@@ -141,23 +142,31 @@ main (int argc, char *argv[])
   f1sp->setValue(9);
 
   SourceIPMask *f1sm = new SourceIPMask();
-  f1m->setValue(Ipv4Address("10.0.1.1"), Ipv4Mask("255.255.255.0"));
+  f1sm->setValue(Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
 
-  SourceIPMask *f2sm = new SourceIPMask();
-  f2m->setValue(Ipv4Address("10.0.2.2"), Ipv4Mask("255.255.255.0"));
+  DestinationIPAddress *d1 = new DestinationIPAddress();
+  d1->setValue(ns3::Ipv4Address("10.2.2.2"));
+
+
+  DestinationIPMask *d1m = new DestinationIPMask();
+  d1m->setValue(Ipv4Address("10.2.2.2"), Ipv4Mask("255.255.255.0"));
 
 
   SourceIPAddress *f2 = new SourceIPAddress();
   f2->setValue(ns3::Ipv4Address("10.1.2.2"));
 
-  DestinationIPAddress *d1 = new DestinationIPAddress();
-  d1->setValue(ns3::Ipv4Address("10.1.2.2"));
+  SourcePortNumber *f2sp = new SourcePortNumber();
+  f2sp->setValue(9);
 
   DestinationIPAddress *d2 = new DestinationIPAddress();
   d2->setValue(ns3::Ipv4Address("10.1.2.5"));
 
-  SourcePortNumber *f2sp = new SourcePortNumber();
-  f2sp->setValue(9);
+  SourceIPMask *f2sm = new SourceIPMask();
+  f2sm->setValue(Ipv4Address("10.0.2.2"), Ipv4Mask("255.255.255.0"));
+
+  DestinationIPMask *d2m = new DestinationIPMask();
+  d2m->setValue(Ipv4Address("10.1.1.0"), Ipv4Mask("255.255.255.0"));
+
 
 
   // 4. Create a new Filter Container for both of those
@@ -166,13 +175,15 @@ main (int argc, char *argv[])
   filter1->addElement(f1);
   filter1->addElement(d1);
   filter1->addElement(f1sm);
-  filter1->addElement(f1sp);
+  // filter1->addElement(f1sp);
+  filter1->addElement(d1m);
 
   FilterContainer *filter2 = new FilterContainer();
   filter2->addElement(f2);
   filter2->addElement(d2);
   filter2->addElement(f2sm);
-  filter2->addElement(f2sp);
+  // filter2->addElement(f2sp);
+  filter2->addElement(d2m);
 
 
   // 5. Create Traffic Class with those two filters
@@ -212,7 +223,7 @@ main (int argc, char *argv[])
     // We tell it to make 2 queues, one w low-pri, one w high-pri
 
   Ptr<Node> firstNode = n1;
-  Ptr<PointToPointNetDevice> firstDevice = n0->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  Ptr<PointToPointNetDevice> firstDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
 
   firstDevice->SetQueue(myFirstQueue);
   // cout << "Debug this" << endl;
@@ -251,6 +262,7 @@ main (int argc, char *argv[])
     uint16_t port = 4000;
 
     UdpServerHelper server(port);
+
     ApplicationContainer apps = server.Install(n2);
     apps.Start(Seconds(1.0));
     apps.Stop(Seconds(10.0));

@@ -48,6 +48,8 @@ SourcePortNumber::match(Ptr<Packet> p) {
         return true;
     }
 
+    cout << "SourcePortNumber: " << udpHeader.GetSourcePort() << " " << value << endl;
+
     return false;
 }
 
