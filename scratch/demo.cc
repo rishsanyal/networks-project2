@@ -31,7 +31,8 @@
 #include "filter-container.h"
 #include "filter-element.h"
 #include "source-ip-address.h"
-#include "source-ip-mask.h"
+#include "destination-ip-address.h"
+
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -95,9 +96,9 @@ main (int argc, char *argv[])
   // Ptr<TempQueue<Packet>> myQueue = CreateObject<TempQueue<Packet>>();
   // Ptr<PointToPointNetDevice> device = n1->GetDevice(0)->GetObject<PointToPointNetDevice>();
 
-  Ptr<Node> middleNode = nodes.Get(1);
-  Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  // Ptr<NewPriQueue> myQueue = CreateObject<NewPriQueue>();
+  // Ptr<Node> middleNode = nodes.Get(1);
+  // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  // Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
   // middleDevice->SetQueue(myQueue);
 
   // Install the InternetStack on the nodes
@@ -131,30 +132,27 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-
-
   SourceIPAddress *f1 = new SourceIPAddress();
-  f1->setValue(Ipv4Address("10.1.1.1"));
-
-  SourceIPMask *f1m = new SourceIPMask();
-  f1m->setValue(Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
+  f1->setValue(ns3::Ipv4Address("10.1.1.1"));
 
   SourceIPAddress *f2 = new SourceIPAddress();
   f2->setValue(ns3::Ipv4Address("10.1.2.2"));
 
-  SourceIPMask *f2m = new SourceIPMask();
-  f2m->setValue(Ipv4Address("10.1.2.2"), Ipv4Mask("255.255.255.0"));
+  DestinationIPAddress *d1 = new DestinationIPAddress();
+  d1->setValue(ns3::Ipv4Address("10.1.2.2"));
 
+  DestinationIPAddress *d2 = new DestinationIPAddress();
+  d2->setValue(ns3::Ipv4Address("10.1.2.5"));
 
   // 4. Create a new Filter Container for both of those
 
   FilterContainer *filter1 = new FilterContainer();
   filter1->addElement(f1);
-  filter1->addElement(f1m);
+  filter1->addElement(d1);
 
   FilterContainer *filter2 = new FilterContainer();
   filter2->addElement(f2);
-  filter2->addElement(f2m);
+  filter2->addElement(d2);
 
 
   // 5. Create Traffic Class with those two filters
@@ -173,20 +171,19 @@ main (int argc, char *argv[])
 
   // 6. Pass that Traffic class to SPQ
   // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
-  // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
+  ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
 
-  Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
   myFirstQueue->AddTrafficClass(t1);
   // myFirstQueue->AddTrafficClass(t2);
+  // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
 
-  
   myFirstQueue->test();
 
   // Ptr<TempQueue<Packet>> myTempQueue = CreateObject<TempQueue<Packet>>();
     // We tell it to make 2 queues, one w low-pri, one w high-pri
 
   Ptr<Node> firstNode = n1;
-  Ptr<PointToPointNetDevice> firstDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  Ptr<PointToPointNetDevice> firstDevice = n0->GetDevice(1)->GetObject<PointToPointNetDevice>();
 
   firstDevice->SetQueue(myFirstQueue);
   // cout << "Debug this" << endl;

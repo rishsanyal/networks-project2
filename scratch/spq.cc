@@ -29,12 +29,14 @@ using namespace ns3;
         });
 
       }
-
-      bool Enqueue(Ptr<ns3::Packet> p) override{
-        // TODO: Check which queue to dequeue from.
-              // Unsure what the queue should be.
-              int index = this->Classify(p);
-              return q_class[index]->Enqueue(p);
+      int size = 0;
+      bool Enqueue(Ptr<ns3::Packet> p) override {
+          int index = this->Classify(p);
+          bool result = q_class[index]->Enqueue(p);
+          if (result) {
+              std::cout << "Packet enqueued. Queue size: " << q_class[index]->GetQueueSize() << std::endl;
+          }
+          return result;
       }
 
       Ptr<ns3::Packet> Remove() override{
@@ -44,7 +46,6 @@ using namespace ns3;
       Ptr<const ns3::Packet> Peek() const override {
           return nullptr;
       }
-
 
       Ptr<ns3::Packet> Dequeue() override {
 
@@ -70,7 +71,6 @@ using namespace ns3;
           }
           return false;
       }
-
 
       Ptr<ns3::Packet> Schedule(){
         for(int i = 0; i < noOfQueues; i++) {

@@ -1,4 +1,3 @@
-
 #ifndef DESTINATION_IP_ADDRESS_H
 #define DESTINATION_IP_ADDRESS_H
 
@@ -8,16 +7,44 @@
 using namespace ns3;
 using namespace std;
 
+namespace ns3 {
 class DestinationIPAddress : public FilterElement {
-public:
+    public:
+        DestinationIPAddress();
+        void setValue(Ipv4Address value);
+        bool match(Ptr<Packet> p) override;
 
-    DestinationIPAddress() { }
+    private:
+        Ipv4Address value;
 
-    bool match(Ptr<Packet>& p) { }
+};
 
-private:
-    Ipv4Address value;
+DestinationIPAddress::DestinationIPAddress() {}
+
+void DestinationIPAddress::setValue(ns3::Ipv4Address value){
+    this->value = value;
+}
+
+bool DestinationIPAddress::match(Ptr<Packet> p){
+
+    Ptr<ns3::Packet> tempPacket = p->Copy();
+
+    PppHeader pppHeader;
+    tempPacket->RemoveHeader(pppHeader);
+
+    Ipv4Header ipHeader;
+    tempPacket->RemoveHeader(ipHeader);
     
+    UdpHeader udpHeader;
+    tempPacket->RemoveHeader(udpHeader);
+
+    if(ipHeader.GetDestination()==value){
+        return true;
+    } else {
+        return false;
+    }
+}
+
 };
 
 #endif

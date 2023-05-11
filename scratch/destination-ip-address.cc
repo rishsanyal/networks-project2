@@ -5,21 +5,7 @@
 using namespace ns3;
 using namespace std;
 
-class DestinationIPAddress : public FilterElement {
-    private:
-        Ipv4Address value;
-    public:
-            
-        DestinationIPAddress() { }
-        
-        bool match(Ptr<Packet>& p) {
-            Ipv4Header header;
-            p->PeekHeader(header);
+namespace ns3{
 
-            if(header.GetDestination()==value){
-                return true;
-            } else {
-                return false;
-            }
-        }
-};
+
+} // namespace ns3
