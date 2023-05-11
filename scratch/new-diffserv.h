@@ -11,6 +11,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/object-base.h"
 #include "new-traffic-class.h"
+
 // #include "queue-mode.cc"
 
 
@@ -167,8 +168,23 @@ bool NewDiffServ::EnqueueAtIndex(Ptr<ns3::Packet> p, int vectorIndex){
 
 
 int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
+
+    Ptr<ns3::Packet> tempPacket = p->Copy();
+
+    PppHeader pppHeader;
+    tempPacket->RemoveHeader(pppHeader);
+
+    Ipv4Header ipHeader;
+    tempPacket->RemoveHeader(ipHeader);
+
+    UdpHeader udpHeader;
+    tempPacket->RemoveHeader(udpHeader);
+
+
     for (int i = 0; i < q_class.size(); i++) {
-        if (q_class[i]->Match(p)) {
+        cout << "Match:" << q_class[i] << endl;
+        if (q_class[i]->Match(p) ) {
+            cout << "Matched:" << i << endl;
             return i;
         }
     }

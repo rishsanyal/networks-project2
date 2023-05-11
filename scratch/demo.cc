@@ -133,7 +133,7 @@ main (int argc, char *argv[])
 
 
   SourceIPAddress *f1 = new SourceIPAddress();
-  f1->setValue(ns3::Ipv4Address("10.1.1.1"));
+  f1->setValue(Ipv4Address("10.1.1.0"));
 
   SourceIPAddress *f2 = new SourceIPAddress();
   f2->setValue(ns3::Ipv4Address("10.1.2.2"));

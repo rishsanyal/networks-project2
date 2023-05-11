@@ -26,10 +26,24 @@ void SourceIPAddress::setValue(ns3::Ipv4Address value){
 }
 
 bool SourceIPAddress::match(Ptr<Packet> p){
-    Ipv4Header header;
-    p->PeekHeader(header);
 
-    if(header.GetSource() == value){
+    Ptr<ns3::Packet> tempPacket = p->Copy();
+
+    PppHeader pppHeader;
+    tempPacket->RemoveHeader(pppHeader);
+
+    Ipv4Header ipHeader;
+    tempPacket->RemoveHeader(ipHeader);
+    
+    UdpHeader udpHeader;
+    tempPacket->RemoveHeader(udpHeader);
+
+    cout << "Value:" << value << endl;
+
+    
+    cout << "Source IPh " << ipHeader.GetSource() << endl;
+
+    if(ipHeader.GetSource() == value){
         // 1
         return true;
     } else {
