@@ -34,10 +34,10 @@ public:
     NewDiffServ();
     // ~NewDiffServ() override;
 
-    bool Enqueue(Ptr<Packet> item) override;
-    Ptr<Packet> Dequeue() override;
-    Ptr<Packet> Remove() override;
-    Ptr<const Packet> Peek() const override;
+    bool Enqueue(Ptr<ns3::Packet> item) override;
+    Ptr<ns3::Packet> Dequeue() override;
+    Ptr<ns3::Packet> Remove() override;
+    Ptr<const ns3::Packet> Peek() const override;
 
     virtual Ptr<ns3::Packet> Schedule();
     virtual uint32_t Classify(Ptr<ns3::Packet> p);
@@ -48,7 +48,7 @@ public:
 
 
     bool EnqueueAtIndex(Ptr<ns3::Packet> p, int vectorIndex);
-    Ptr<Packet> DequeueFromIndex(int vectorIndex);
+    Ptr<ns3::Packet> DequeueFromIndex(int vectorIndex);
 
     vector<NewTrafficClass*> GetTrafficClasses();
 
@@ -78,7 +78,7 @@ NewDiffServ::NewDiffServ() {
     q_class = vector<NewTrafficClass*>();
 }
 
-bool NewDiffServ::Enqueue(Ptr<Packet> item) {
+bool NewDiffServ::Enqueue(Ptr<ns3::Packet> item) {
 
     // Classify returns the index at which we need to add the packet
     int vectorIndex = Classify(item);
@@ -90,17 +90,17 @@ bool NewDiffServ::Enqueue(Ptr<Packet> item) {
     return EnqueueAtIndex(item, vectorIndex);
 }
 
-Ptr<Packet> NewDiffServ::Dequeue() {
+Ptr<ns3::Packet> NewDiffServ::Dequeue() {
     // NS_LOG_FUNCTION(this);
     return DoDequeue();
 }
 
-Ptr<Packet> NewDiffServ::Remove() {
+Ptr<ns3::Packet> NewDiffServ::Remove() {
     // NS_LOG_FUNCTION(this);
     return DoRemove();
 }
 
-Ptr<const Packet> NewDiffServ::Peek() const {
+Ptr<const ns3::Packet> NewDiffServ::Peek() const {
     // NS_LOG_FUNCTION(this);
     return DoPeek();
 }

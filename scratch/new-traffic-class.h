@@ -25,7 +25,7 @@ class NewTrafficClass{
         int PeekSize();
 
 
-        bool Match(Ptr<Packet> p) const;
+        bool Match(ns3::Ptr<ns3::Packet> p) const;
         vector<FilterContainer*> filters;
         uint32_t GetPriorityLevel() const;
         bool AddFilter(FilterContainer* f);

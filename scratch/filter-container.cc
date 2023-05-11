@@ -10,20 +10,7 @@ namespace ns3 {
 
   // FilterContainer::FilterContainer() {};
 
-  void FilterContainer::addElement(FilterElement* element) {
-    elements.push_back(element);
-  }
 
-  bool FilterContainer::match(const Ptr<Packet> p) {
-    for (const auto& elem : elements) {
-      if (!elem->match(p)) {
-        return false;
-      }
-    }
-
-    return true;
-
-  }
     // class FilterContainer {
     //   private:
     //     vector<FilterElement*> elements;
@@ -45,7 +32,7 @@ namespace ns3 {
     //     }
 
     // };
-};
+}
 
 // class FilterContainer {
 //   private:

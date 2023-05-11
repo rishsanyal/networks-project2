@@ -27,6 +27,9 @@
 // #include "ns3/new-queue.h"
 #include "twoQueue.h"
 #include "new-spq.h"
+#include "filter-container.h"
+#include "filter-element.h"
+#include "source-ip-address.h"
 
 // #include "src/network/utils/temp-queue.h"
 // #include "ns3/temp-queue.h"
@@ -110,7 +113,47 @@ main (int argc, char *argv[])
   // tch.SetRootQueueDisc ("TwoQueues");
   // tch.Install (devices1);
 
-  Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
+  // Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
+
+
+    SourceIPAddress *f1 = new SourceIPAddress();
+    f1->setValue(ns3::Ipv4Address("10.1.1.1"));
+
+    SourceIPAddress *f2 = new SourceIPAddress();
+    f2->setValue(ns3::Ipv4Address("10.1.2.2"));
+
+    // 4. Create a new Filter Container for both of those
+
+    FilterContainer *filter1 = new FilterContainer();
+    filter1->addElement(f1);
+
+    FilterContainer *filter2 = new FilterContainer();
+    filter2->addElement(f2);
+
+
+    // 5. Create Traffic Class with those two filters
+
+    // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
+    // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
+    NewTrafficClass *t1 = new NewTrafficClass(
+        10, 10000, 0.0, 2, false
+    );
+    t1->AddFilter(filter1);
+
+    NewTrafficClass *t2 = new NewTrafficClass(
+        10, 10000, 0.0, 1, false
+    );
+    t2->AddFilter(filter2);
+
+    // 6. Pass that Traffic class to SPQ
+    NewPriQueue *myFirstQueue = new NewPriQueue();
+
+    myFirstQueue->AddTrafficClass(t1);
+    myFirstQueue->AddTrafficClass(t2);
+    // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
+
+    myFirstQueue->test();
+
   // Ptr<TwoQueues> myFirstQueue = CreateObject<TwoQueues>();
     // We tell it to make 2 queues, one w low-pri, one w high-pri
 
