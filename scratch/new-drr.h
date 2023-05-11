@@ -61,7 +61,7 @@ NewDRRQueue::NewDRRQueue() {
 }
 
 bool NewDRRQueue::Enqueue(Ptr<ns3::Packet> p){
-    // cout << "NewDRRQueue::Enqueue" << endl;
+    cout << "NewDRRQueue::Enqueue" << endl;
 
     int vectorIndex = Classify(p);
 

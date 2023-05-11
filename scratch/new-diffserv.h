@@ -23,7 +23,7 @@ using namespace std;
 namespace ns3
 {
 
-class NewDiffServ: public Queue<ns3::Packet> {
+class NewDiffServ: public Queue<Packet> {
 public:
 
 

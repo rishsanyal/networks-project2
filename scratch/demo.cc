@@ -76,7 +76,7 @@ main (int argc, char *argv[])
   PointToPointHelper routerToServer;
   routerToServer.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   routerToServer.SetChannelAttribute ("Delay", StringValue ("20ms"));
-  // routerToServer.SetQueue("TwoQueues");
+  // routerToServer.SetQueue("NewPriQueue");
 
 
   // Ptr<PointToPointNetDevice> p2pDev = CreateObject<PointToPointNetDevice> ();
@@ -166,7 +166,7 @@ main (int argc, char *argv[])
   ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
 
   myFirstQueue->AddTrafficClass(t1);
-  myFirstQueue->AddTrafficClass(t2);
+  // myFirstQueue->AddTrafficClass(t2);
   // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
 
   myFirstQueue->test();
@@ -175,9 +175,11 @@ main (int argc, char *argv[])
     // We tell it to make 2 queues, one w low-pri, one w high-pri
 
   Ptr<Node> firstNode = n1;
-  Ptr<PointToPointNetDevice> firstDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
+  Ptr<PointToPointNetDevice> firstDevice = n0->GetDevice(1)->GetObject<PointToPointNetDevice>();
 
-  firstDevice->SetQueue(myFirstQueue);
+  // firstDevice->SetQueue(myFirstQueue);
+  // cout << "Debug this" << endl;
+    
 
   // Address addy = n2->GetDevice(1)->GetAddress();
   // std::cout << addy << std::endl;
