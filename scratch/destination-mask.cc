@@ -1,34 +1,16 @@
 #include "ns3/core-module.h"
 #include "filter-element.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/udp-header.h"
+
+#include "ns3/ppp-header.h"
+
+#include "source-ip-mask.h"
 
 using namespace ns3;
 using namespace std;
 
-class DestinationIPMask: public FilterElement {
-    private:
-        Ipv4Mask value;
-        Ipv4Address address;
-    public:
+namespace ns3{
 
-        DestinationIPMask() { }
-
-        void setValue(Ipv4Address address, Ipv4Mask value){
-            this->value = value;
-            this->address = address;
-        }
-
-        bool match(Ptr<Packet>& p) {
-            Ipv4Header header;
-            p->PeekHeader(header);
-
-            uint32_t prefixLen = value.GetPrefixLength();
-            Ipv4Mask mask = Ipv4Mask((Ipv4Mask::GetOnes().Get() << (32 - prefixLen)));
-
-            if((header.GetDestination().Get() & mask.Get()) == (value.Get() & mask.Get())){
-                return true;
-            } else {
-                return false;
-            }
-        }
-};
+}
