@@ -101,18 +101,20 @@ Ptr<ns3::Packet> NewDRRQueue::Schedule(){
         }
 
         else{
-            currPacketSize = trafficClasses[currentQueueIndex]->PeekSize();
-            if (currPacketSize <= weightTracker[currentQueueIndex]) {
-                weightTracker[currentQueueIndex] -= currPacketSize;
-                break;
-            }
+                currPacketSize = trafficClasses[currentQueueIndex]->PeekSize();
+                if (currPacketSize <= weightTracker[currentQueueIndex]) {
+                    weightTracker[currentQueueIndex] -= currPacketSize;
+                    break;
+                }
 
-            else if (currPacketSize > weightTracker[currentQueueIndex]) {
-                weightTracker[currentQueueIndex] += trafficClasses[currentQueueIndex]->GetWeight();
-                currentQueueIndex = (currentQueueIndex + 1) % noOfQueues;
-            }
+                else if (currPacketSize > weightTracker[currentQueueIndex]) {
+                    weightTracker[currentQueueIndex] += trafficClasses[currentQueueIndex]->GetWeight();
+                    currentQueueIndex = (currentQueueIndex + 1) % noOfQueues;
+                }
         }
     }
+
+    cout << "NewDRRQueue::Schedule " << currentQueueIndex << endl;
 
     return DequeueFromIndex(currentQueueIndex);
 }

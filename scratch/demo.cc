@@ -159,23 +159,32 @@ main (int argc, char *argv[])
 
   // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
   // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
+  // NewTrafficClass *t1 = new NewTrafficClass(
+  //     10, 10000, 0.0, 2, false
+  // );
+  // t1->AddFilter(filter1);
+
+  // NewTrafficClass *t2 = new NewTrafficClass(
+  //     10, 10000, 0.0, 1, false
+  // );
+  // t2->AddFilter(filter2);
+
   NewTrafficClass *t1 = new NewTrafficClass(
-      10, 10000, 0.0, 2, false
+      10, 10000, 35, 0, false
   );
   t1->AddFilter(filter1);
 
   NewTrafficClass *t2 = new NewTrafficClass(
-      10, 10000, 0.0, 1, false
+      10, 10000, 40, 0, false
   );
   t2->AddFilter(filter2);
-
   // 6. Pass that Traffic class to SPQ
   // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
   ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
 
+  Ptr<NewDRRQueue> myFirstQueue = CreateObject<NewDRRQueue>();
   myFirstQueue->AddTrafficClass(t1);
-  // myFirstQueue->AddTrafficClass(t2);
-  // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
+  myFirstQueue->AddTrafficClass(t2);
 
   myFirstQueue->test();
 
