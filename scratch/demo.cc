@@ -163,7 +163,7 @@ main (int argc, char *argv[])
 
   // 6. Pass that Traffic class to SPQ
   // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
-  ns3::NewDRRQueue *myFirstQueue = new ns3::NewDRRQueue();
+  ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
 
   myFirstQueue->AddTrafficClass(t1);
   myFirstQueue->AddTrafficClass(t2);

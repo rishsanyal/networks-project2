@@ -66,13 +66,23 @@ int NewTrafficClass::PeekSize(){
 }
 
 bool NewTrafficClass::Enqueue(Ptr<Packet> p){
+    if(packets >= maxPackets || bytes >= maxBytes){
+        return false;
+    }
     m_queue.push(p);
+    this->packets++;
+    this->bytes += p->GetSize();
     return true;
 }
 
 Ptr<Packet> NewTrafficClass::Dequeue(){
+    if(m_queue.empty()){
+        return NULL;
+    }
     Ptr<Packet> p = m_queue.front();
     m_queue.pop();
+    this->packets--;
+    this->bytes -= p->GetSize();
     return p;
 }
 
