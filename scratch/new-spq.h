@@ -65,21 +65,22 @@ NewPriQueue::NewPriQueue() {
 }
 
 bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
-    cout << "NewPriQueue::Enqueue" << endl;
+    cout << "NewPriQ::Enqueue" << endl;
 
-    int vectorIndex = Classify(p);
+    // int vectorIndex = Classify(p);
 
-    if (vectorIndex == -1) {
-        return false;
-    }
+    // cout << "Enqueue status: " << vectorIndex << endl;
+    // if (vectorIndex == -1) {
+    //     return false;
+    // }
 
-    bool enqueueStatus = EnqueueAtIndex(p, vectorIndex);
-
+    // bool enqueueStatus = EnqueueAtIndex(p, vectorIndex);
+    
     // if (enqueueStatus) {
     //     priorityMap.insert(std::pair<int, int>(vectorIndex, priorityLevels[vectorIndex]));
     // }
 
-    return enqueueStatus;
+    return 1;
 }
 
 Ptr<ns3::Packet> NewPriQueue::Dequeue(){

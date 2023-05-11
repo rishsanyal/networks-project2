@@ -38,6 +38,7 @@ using namespace std;
 
         bool TrafficClass::Enqueue(const Ptr<Packet> p){
             if (this->packets < this->maxPackets && this->bytes < this->maxBytes){
+                cout<< "Queue Enqueue" << endl;
                 this->m_queue.push(p);
                 this->packets++;
                 this->bytes += p->GetSize();
@@ -48,8 +49,10 @@ using namespace std;
 
         Ptr<Packet> TrafficClass::Dequeue(){
             if (this->m_queue.empty()){
+                cout<< "Queue is empty" << endl;
                 return NULL;
             }
+            cout<< "Queue Dequeue" << endl;
             Ptr<Packet> p = this->m_queue.front();
             this->m_queue.pop();
             this->packets--;

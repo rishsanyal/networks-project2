@@ -66,6 +66,8 @@ int NewTrafficClass::PeekSize(){
 }
 
 bool NewTrafficClass::Enqueue(Ptr<Packet> p){
+
+    
     if(packets >= maxPackets || bytes >= maxBytes){
         return false;
     }
