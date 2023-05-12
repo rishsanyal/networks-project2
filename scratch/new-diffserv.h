@@ -150,13 +150,13 @@ void NewDiffServ::AddTrafficClass(NewTrafficClass* trafficClass) {
 Ptr<ns3::Packet> NewDiffServ::DoDequeue() {
     // NS_LOG_FUNCTION(this);
     cout << "DoDequeue" << endl;
-    return nullptr;
+    return Dequeue();
 }
 
 bool NewDiffServ::DoEnqueue(Ptr<ns3::Packet> p) {
     // NS_LOG_FUNCTION(this << p);
     cout << "DoEnqueue" << endl;
-    return true;
+    return Enqueue(p);
 }
 
 
@@ -202,7 +202,7 @@ Ptr<ns3::Packet> NewDiffServ::DequeueFromIndex(int vectorIndex) {
 Ptr<ns3::Packet> NewDiffServ::DoRemove() {
     // NS_LOG_FUNCTION(this);
     cout << "DoRemove" << endl;
-    return nullptr;
+    return Dequeue();
 }
 
 Ptr<const ns3::Packet> NewDiffServ::DoPeek() const {

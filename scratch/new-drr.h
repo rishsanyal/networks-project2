@@ -156,17 +156,17 @@ uint32_t NewDRRQueue::Classify(Ptr<ns3::Packet> p){
 Ptr<ns3::Packet> NewDRRQueue::DoDequeue(){
     // cout << "NewDRRQueue::DoDequeue " << endl;
 
-    return nullptr;
+    return Dequeue();
 }
 
 bool NewDRRQueue::DoEnqueue(Ptr<ns3::Packet> p){
     // cout << "NewDRRQueue::DoEnqueue" << endl;
-    return true;
+    return Enqueue(p);
 }
 
 Ptr<ns3::Packet> NewDRRQueue::DoRemove(){
     // cout << "NewDRRQueue::DoRemove" << endl;
-    return nullptr;
+    return Dequeue();
 }
 
 Ptr<const ns3::Packet> NewDRRQueue::DoPeek() const{
