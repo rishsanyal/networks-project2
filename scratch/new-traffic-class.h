@@ -23,6 +23,7 @@ class NewTrafficClass{
         bool Enqueue(Ptr<Packet> p);
         Ptr<Packet> Dequeue();
         int PeekSize();
+        Ptr<const Packet> NewTrafficClass::Peek() const;
 
 
         bool Match(ns3::Ptr<ns3::Packet> p) const;
@@ -110,5 +111,11 @@ bool NewTrafficClass::isEmpty() const{
     return m_queue.empty();
 }
 
+Ptr<const Packet> NewTrafficClass::Peek() const{
+    if (m_queue.empty()){
+        return NULL;
+    }
+    return m_queue.front();
+}
 }
 #endif /*NEW_TRAFFIC_CLASS_H*/

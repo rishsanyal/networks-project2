@@ -147,7 +147,26 @@ Ptr<const ns3::Packet> NewPriQueue::DoPeek() const{
     cout << "NewPriQueue::DoPeek" << endl;
     // return nullptr;
 
-    Ptr<const ns3::Packet> item = NULL;
+    vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
+
+    uint32_t curr_highest_priority_index_with_packets = UINT32_MAX;
+    size_t index = -1;
+
+
+    for (size_t i = 0; i < trafficClasses.size(); i++) {
+        if (!trafficClasses[i]->isEmpty()) {
+            if (trafficClasses[i]->GetPriorityLevel() < curr_highest_priority_index_with_packets) {
+                curr_highest_priority_index_with_packets = trafficClasses[i]->GetPriorityLevel();
+                index = i;
+            }
+        }
+    }
+
+    if (index == -1) {
+        return nullptr;
+    }
+
+    Ptr<const ns3::Packet> item = trafficClasses[index]->Peek();
     return item;
 }
 

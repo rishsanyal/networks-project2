@@ -53,7 +53,7 @@ public:
     bool EnqueueAtIndex(Ptr<ns3::Packet> p, int vectorIndex);
     Ptr<ns3::Packet> DequeueFromIndex(int vectorIndex);
 
-    vector<NewTrafficClass*> GetTrafficClasses();
+    vector<NewTrafficClass*> GetTrafficClasses() const;
 
 
     void SetMode(NewDiffServ::QueueMode mode);
@@ -118,7 +118,7 @@ NewDiffServ::QueueMode NewDiffServ::GetMode() {
     return m_mode;
 }
 
-vector<NewTrafficClass*> NewDiffServ::GetTrafficClasses() {
+vector<NewTrafficClass*> NewDiffServ::GetTrafficClasses() const{
     return q_class;
 }
 

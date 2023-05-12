@@ -33,7 +33,7 @@
 #include "source-ip-address.h"
 #include "destination-ip-address.h"
 // #include "protocol-number.h"
-// #include "destination-port-number.h"
+#include "destination-port-number.h"
 
 #include "source-ip-mask.h"
 #include "source-port-number.h"
@@ -59,7 +59,7 @@ using namespace rapidxml;
 
 
 FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort, std::string sourceMask, 
-                       std::string destIP, std::string destMask);
+                       std::string destIP, std::string destMask, std::string destPort);
 
 
 // NS_LOG_COMPONENT_DEFINE("FirstScriptExample");
@@ -99,7 +99,7 @@ main (int argc, char *argv[])
         std::string destMask = filterElement_node->first_node("DestMask")->value();
         std::string protocolNumber = filterElement_node->first_node("ProtocolNumber")->value();
 
-        FilterContainer* filterTemp = setFilterElements(sourceIP, sourcePort, sourceMask, destIP, destMask);
+        FilterContainer* filterTemp = setFilterElements(sourceIP, sourcePort, sourceMask, destIP, destMask, destPort);
         filter1.push_back(filterTemp);
 
 
@@ -443,14 +443,14 @@ main (int argc, char *argv[])
 
 
 FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort, std::string sourceMask, 
-                       std::string destIP, std::string destMask) 
+                       std::string destIP, std::string destMask, std::string destPort) 
 {
     // Create FilterElement object
     SourceIPAddress *sip = new SourceIPAddress();
     sip->setValue(Ipv4Address(sourceIP.c_str()));
 
-    SourcePortNumber *spn = new SourcePortNumber();
-    spn->setValue(std::stoi(sourcePort));
+    // SourcePortNumber *spn = new SourcePortNumber();
+    // spn->setValue(std::stoi(sourcePort));
 
     SourceIPMask *sim = new SourceIPMask();
     sim->setValue(Ipv4Address(sourceIP.c_str()), Ipv4Mask(sourceMask.c_str()));
@@ -458,8 +458,8 @@ FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort,
     DestinationIPAddress *dip = new DestinationIPAddress();
     dip->setValue(Ipv4Address(destIP.c_str()));
 
-    // DestinationPortNumber *dpn = new DestinationPortNumber();
-    // dpn->setValue(std::stoi(destPort));
+    DestinationPortNumber *dpn = new DestinationPortNumber();
+    dpn->setValue(std::stoi(destPort));
 
     DestinationIPMask *dim = new DestinationIPMask();
     dim->setValue(Ipv4Address(destIP.c_str()), Ipv4Mask(destMask.c_str()));
@@ -469,7 +469,7 @@ FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort,
 
     FilterContainer *filter = new FilterContainer();
     filter->addElement(sip);
-    filter->addElement(spn);
+    // filter->addElement(spn);
     filter->addElement(sim);
     filter->addElement(dip);
     // filter->addElement(dpn);
