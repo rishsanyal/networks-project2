@@ -225,7 +225,7 @@ main (int argc, char *argv[])
   // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
   // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
 
-  Ptr<NewDRRQueue> myFirstQueue = CreateObject<NewDRRQueue>();
+  // Ptr<NewDRRQueue> myFirstQueue = CreateObject<NewDRRQueue>();
   myFirstQueue->AddTrafficClass(t1);
   myFirstQueue->AddTrafficClass(t2);
 

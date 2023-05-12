@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config>
+    <FilterElements>
+        <FilterElement>
+            <SourceIP>10.1.1.1</SourceIP>
+            <SourcePort>1111</SourcePort>
+            <SourceMask>255.255.255.0</SourceMask>
+            <DestIP>10.2.2.2</DestIP>
+            <DestPort>2222</DestPort>
+            <DestMask>255.255.255.0</DestMask>
+            <ProtocolNumber>17</ProtocolNumber>
+        </FilterElement>
+        <FilterElement>
+            <SourceIP>10.1.2.2</SourceIP>
+            <SourcePort>1111</SourcePort>
+            <SourceMask>255.255.255.0</SourceMask>
+            <DestIP>10.1.2.5</DestIP>
+            <DestPort>2222</DestPort>
+            <DestMask>255.255.255.0</DestMask>
+            <ProtocolNumber>17</ProtocolNumber>
+        </FilterElement>
+    </FilterElements>
+    <!-- <UDPClient>
+        <MaxPacketSize>1024</MaxPacketSize>
+        <MaxPackets>10</MaxPackets>
+        <MaxTime>0.025</MaxTime>
+    </UDPClient>
+    <UDPServer>
+        <PortNumber>4000</PortNumber>
+    </UDPServer> -->
+    <SPQ>
+        <NumQueues>3</NumQueues>
+        <PriorityLevels>
+            <Level>2</Level>
+            <Level>4</Level>
+            <Level>1</Level>
+        </PriorityLevels>
+    </SPQ>
+    <!-- <DRR>
+        <NumQueues>2</NumQueues>
+        <Quanta>
+            <Quantum>35</Quantum>
+            <Quantum>40</Quantum>
+        </Quanta>
+    </DRR> -->
+</Config>
