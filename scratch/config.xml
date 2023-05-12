@@ -35,6 +35,7 @@
             <Level>4</Level>
             <Level>1</Level>
         </PriorityLevels>
+        <Default>1</Default>
     </SPQ>
     <!-- <DRR>
         <NumQueues>2</NumQueues>

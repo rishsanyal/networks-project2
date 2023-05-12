@@ -23,7 +23,7 @@ class NewTrafficClass{
         bool Enqueue(Ptr<Packet> p);
         Ptr<Packet> Dequeue();
         int PeekSize();
-        Ptr<const Packet> NewTrafficClass::Peek() const;
+        Ptr<const Packet> Peek() const;
 
 
         bool Match(ns3::Ptr<ns3::Packet> p) const;

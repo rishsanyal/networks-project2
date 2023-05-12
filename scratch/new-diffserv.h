@@ -130,6 +130,7 @@ Ptr<ns3::Packet> NewDiffServ::Schedule() {
 uint32_t NewDiffServ::Classify(Ptr<ns3::Packet> p) {
     // NS_LOG_FUNCTION(this << p);
     int trafficClassIndex = checkForPacketInAllTrafficClasses(p);
+
     return trafficClassIndex;
 }
 
@@ -187,7 +188,7 @@ int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
         }
     }
 
-    cout << "Didn't match anything" << endl;
+    cout << "Didn't match anything use default" << endl;
 
     return -1;
 }
