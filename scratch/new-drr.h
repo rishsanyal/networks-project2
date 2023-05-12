@@ -171,7 +171,9 @@ Ptr<ns3::Packet> NewDRRQueue::DoRemove(){
 
 Ptr<const ns3::Packet> NewDRRQueue::DoPeek() const{
     // cout << "NewDRRQueue::DoPeek" << endl;
-    return nullptr;
+    vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
+    Ptr<const ns3::Packet> item = trafficClasses[currentQueueIndex]->Peek();
+    return item;
 }
 
 void NewDRRQueue::test(){
