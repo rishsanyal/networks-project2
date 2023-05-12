@@ -41,24 +41,15 @@
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
 
-// #include "src/network/utils/temp-queue.h"
-// #include "ns3/temp-queue.h"
-// #include "temp-queue.h"
-// #include "tempQueue.h"
-
-// Default Network Topology
-//
-//       10.1.1.0
-// n0 -------------- n1
-//    point-to-point
-//
+#include <iostream>
+#include <unistd.h>
 
 using namespace ns3;
 using namespace std;
 using namespace rapidxml;
 
 
-FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort, std::string sourceMask, 
+FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort, std::string sourceMask,
                        std::string destIP, std::string destMask, std::string destPort);
 
 
@@ -75,6 +66,11 @@ main (int argc, char *argv[])
   vector<NewTrafficClass*> trafficClass;
 
     // Load XML file into memory
+
+    char buffer[256];
+    getcwd(buffer, 256);
+
+    std::cout << "Current working directory: " << buffer << std::endl;
     rapidxml::file<> xmlFile("/Users/jayanarayananj/Desktop/networks-project2/scratch/config.xml");
 
     // Parse XML file
@@ -86,9 +82,9 @@ main (int argc, char *argv[])
 
     // Iterate over all FilterElement nodes
     xml_node<> *filterElements_node = root_node->first_node("FilterElements");
-    for (xml_node<> *filterElement_node = filterElements_node->first_node("FilterElement"); 
-         filterElement_node; 
-         filterElement_node = filterElement_node->next_sibling("FilterElement")) 
+    for (xml_node<> *filterElement_node = filterElements_node->first_node("FilterElement");
+         filterElement_node;
+         filterElement_node = filterElement_node->next_sibling("FilterElement"))
     {
         // Extract and print data
         std::string sourceIP = filterElement_node->first_node("SourceIP")->value();
@@ -103,7 +99,7 @@ main (int argc, char *argv[])
         filter1.push_back(filterTemp);
 
 
-        NS_LOG_UNCOND("FilterElement: " << sourceIP << ", " << sourcePort << ", " << sourceMask << ", " 
+        NS_LOG_UNCOND("FilterElement: " << sourceIP << ", " << sourcePort << ", " << sourceMask << ", "
                       << destIP << ", " << destPort << ", " << destMask << ", " << protocolNumber);
     }
 
@@ -121,10 +117,10 @@ main (int argc, char *argv[])
 
     // NS_LOG_UNCOND("UDPServer PortNumber: " << portNumber);
 
-    
+
     xml_node<> *SPQ_node = root_node->first_node("SPQ");
     xml_node<> *DRR_node = root_node->first_node("DRR");
-    
+
     if(SPQ_node) {
     // Extract SPQ details
     uint32_t numQueues = std::stoi(SPQ_node->first_node("NumQueues")->value());
@@ -132,9 +128,9 @@ main (int argc, char *argv[])
     NS_LOG_UNCOND("SPQ NumQueues: " << numQueues);
 
     xml_node<> *priorityLevels_node = SPQ_node->first_node("PriorityLevels");
-    for (xml_node<> *level_node = priorityLevels_node->first_node("Level"); 
-         level_node; 
-         level_node = level_node->next_sibling("Level")) 
+    for (xml_node<> *level_node = priorityLevels_node->first_node("Level");
+         level_node;
+         level_node = level_node->next_sibling("Level"))
     {
         uint32_t priority = std::stoi(level_node->value());
         NewTrafficClass *t1 = new NewTrafficClass(
@@ -147,7 +143,7 @@ main (int argc, char *argv[])
 
         NS_LOG_UNCOND("SPQ Level: " << priority);
     }
-    
+
 
     } else if(DRR_node) {
      // Extract DRR details
@@ -156,9 +152,9 @@ main (int argc, char *argv[])
     NS_LOG_UNCOND("DRR NumQueues: " << DRR_numQueues);
 
     xml_node<> *quanta_node = DRR_node->first_node("Quanta");
-    for (xml_node<> *quantum_node = quanta_node->first_node("Quantum"); 
-         quantum_node; 
-         quantum_node = quantum_node->next_sibling("Quantum")) 
+    for (xml_node<> *quantum_node = quanta_node->first_node("Quantum");
+         quantum_node;
+         quantum_node = quantum_node->next_sibling("Quantum"))
     {
         uint32_t quantum = std::stoi(quantum_node->value());
         NewTrafficClass *t1 = new NewTrafficClass(
@@ -442,8 +438,8 @@ main (int argc, char *argv[])
 }
 
 
-FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort, std::string sourceMask, 
-                       std::string destIP, std::string destMask, std::string destPort) 
+FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort, std::string sourceMask,
+                       std::string destIP, std::string destMask, std::string destPort)
 {
     // Create FilterElement object
     SourceIPAddress *sip = new SourceIPAddress();
