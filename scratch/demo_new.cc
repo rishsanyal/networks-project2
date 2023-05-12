@@ -451,7 +451,6 @@ FilterContainer* setFilterElements(std::string sourceIP, std::string sourcePort,
 
     SourcePortNumber *spn = new SourcePortNumber();
     spn->setValue(std::stoi(sourcePort));
-    cout << "Source Port Number: " << std::stoi(sourcePort) << endl;
 
     SourceIPMask *sim = new SourceIPMask();
     sim->setValue(Ipv4Address(sourceIP.c_str()), Ipv4Mask(sourceMask.c_str()));
