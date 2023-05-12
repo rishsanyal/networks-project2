@@ -66,12 +66,13 @@ main (int argc, char *argv[])
   vector<NewTrafficClass*> trafficClass;
 
     // Load XML file into memory
-
     char buffer[256];
     getcwd(buffer, 256);
+    char* filename = strcat(buffer, "/scratch/config.xml");
+    rapidxml::file<> xmlFile(filename);
 
-    std::cout << "Current working directory: " << buffer << std::endl;
-    rapidxml::file<> xmlFile("/Users/jayanarayananj/Desktop/networks-project2/scratch/config.xml");
+    // std::cout << "Current working directory: " << buffer << std::endl;
+    // rapidxml::file<> xmlFile("/Users/jayanarayananj/Desktop/networks-project2/scratch/config.xml");
 
     // Parse XML file
     rapidxml::xml_document<> doc;
@@ -128,13 +129,27 @@ main (int argc, char *argv[])
     NS_LOG_UNCOND("SPQ NumQueues: " << numQueues);
 
     xml_node<> *priorityLevels_node = SPQ_node->first_node("PriorityLevels");
+
+    bool isDefaultSet = false;
+    uint32_t defaultPriorityLevel = std::stoi(priorityLevels_node->first_node("Level")->value());
+
+    cout << defaultPriorityLevel << endl;
+    cout << isDefaultSet << endl;
+
     for (xml_node<> *level_node = priorityLevels_node->first_node("Level");
          level_node;
          level_node = level_node->next_sibling("Level"))
     {
+        bool isDefault = false;
         uint32_t priority = std::stoi(level_node->value());
+
+        if(priority == defaultPriorityLevel && !isDefaultSet) {
+            isDefault = true;
+            isDefaultSet = true;
+        }
+
         NewTrafficClass *t1 = new NewTrafficClass(
-            10, 10000, 0, priority, false
+            10, 10000, 0, priority, isDefault
         );
         for(int i=0;i<filter1.size();i++) {
             t1->AddFilter(filter1[i]);

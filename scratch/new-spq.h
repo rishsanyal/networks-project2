@@ -70,6 +70,10 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
     int vectorIndex = Classify(p);
 
     if (vectorIndex == -1) {
+        // Check for default queue if no other queue matches
+
+        cout << "No matching queue found. Checking for default queue" << endl;
+
         return false;
     }
 
@@ -79,7 +83,7 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewPriQueue::Dequeue(){
-    // cout << "NewPriQueue::Dequeue" << endl;
+    cout << "NewPriQueue::Dequeue" << endl;
 
     return Schedule();
 }

@@ -16,7 +16,7 @@ namespace ns3
 {
 class NewTrafficClass{
     public:
-        NewTrafficClass(uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false);
+        NewTrafficClass(uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = true);
         // NewTrafficClass();
         // ~NewTrafficClass();
 
@@ -31,6 +31,7 @@ class NewTrafficClass{
         uint32_t GetPriorityLevel() const;
         bool AddFilter(FilterContainer* f);
         bool isEmpty() const;
+        bool GetIsDefault();
 
         double GetWeight();
 
@@ -54,11 +55,16 @@ NewTrafficClass::NewTrafficClass(uint32_t maxPackets, uint32_t maxBytes, double 
     this->maxBytes = maxBytes;
     this->weight = weight;
     this->priorityLevel = priorityLevel;
+
     this->isDefault = isDefault;
 }
 
 double NewTrafficClass::GetWeight(){
     return weight;
+}
+
+bool NewTrafficClass::GetIsDefault(){
+    return isDefault;
 }
 
 int NewTrafficClass::PeekSize(){

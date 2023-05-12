@@ -169,18 +169,6 @@ bool NewDiffServ::EnqueueAtIndex(Ptr<ns3::Packet> p, int vectorIndex){
 
 int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
 
-    Ptr<ns3::Packet> tempPacket = p->Copy();
-
-    PppHeader pppHeader;
-    tempPacket->RemoveHeader(pppHeader);
-
-    Ipv4Header ipHeader;
-    tempPacket->RemoveHeader(ipHeader);
-
-    UdpHeader udpHeader;
-    tempPacket->RemoveHeader(udpHeader);
-
-
     for (int i = 0; i < q_class.size(); i++) {
         if (q_class[i]->Match(p) ) {
             // cout << "Matched:" << i << endl;
@@ -188,7 +176,17 @@ int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
         }
     }
 
-    cout << "Didn't match anything use default" << endl;
+    for (int i = 0; i < q_class.size(); i++) {
+        if (q_class[i]->GetIsDefault()) {
+            cout << "Matched default:" << i << endl;
+            return i;
+        }
+    }
+
+
+    cout << "Didn't match anything" << endl;
+
+
 
     return -1;
 }
