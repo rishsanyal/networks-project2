@@ -52,7 +52,7 @@ private:
 
     int noOfQueues;
     vector<int> priorityLevels;
-    vector<NewTrafficClass*> q_class;
+    // vector<NewTrafficClass*> q_class;
     QueueMode m_mode;
 };
 
@@ -60,7 +60,6 @@ NewPriQueue::NewPriQueue() {
     cout << "NewPriQueue" << endl;
     noOfQueues = 0;
     priorityLevels = vector<int>();
-    q_class = vector<NewTrafficClass*>();
     m_mode = QueueMode::Packet; //TODO: Get this from the config file?
 }
 
@@ -70,6 +69,7 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
     int vectorIndex = Classify(p);
 
     if (vectorIndex == -1) {
+        // Check for default queue if no other queue matches
         return false;
     }
 
