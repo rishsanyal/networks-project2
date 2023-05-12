@@ -93,12 +93,7 @@ bool NewDRRQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewDRRQueue::Dequeue(){
-    // std::cout << "NewDRRQueue::Dequeue" << std::endl;
-
     Ptr<ns3::Packet> dequedPacket = Schedule();
-
-    // cout << "Dequeue status: " << (dequedPacket != nullptr) << endl;
-
     return dequedPacket;
 }
 

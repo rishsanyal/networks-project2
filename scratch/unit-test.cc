@@ -487,6 +487,8 @@ bool testDRR(){
     Ptr<ns3::Packet> p_2_2 = __createPacket("p_2_2", source_ip_two);
     Ptr<ns3::Packet> p_2_3 = __createPacket("p_2_3", source_ip_two);
 
+    Ptr<ns3::Packet> p_default = __createPacket("p_default_2", "10.3.3.3");
+
     // 3. Create filters for those two applications
     // Creating Source IP Filters for both the queues
 
@@ -530,6 +532,7 @@ bool testDRR(){
 
     // 7. Check if the packets are enqueued in the correct order
     drr->Enqueue(p_1_1);
+    drr->Enqueue(p_default);
     drr->Enqueue(p_2_1);
     drr->Enqueue(p_1_2);
     drr->Enqueue(p_2_2);
@@ -556,6 +559,20 @@ bool testDRR(){
         cout << p1->GetUid() << endl;
     }
 
+
+    p1 = drr->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
+
+    p1 = drr->Dequeue();
+    if (p1 == NULL) {
+        cout << "No packet in queue" << endl;
+    } else {
+        cout << p1->GetUid() << endl;
+    }
 
     p1 = drr->Dequeue();
     if (p1 == NULL) {
@@ -605,8 +622,8 @@ int main (int argc, char *argv[])
 
     // TestTCPass(Create<ns3::Packet> (100));
 
-    testSPQ();
-    // testDRR();
+    // testSPQ();
+    testDRR();
 
   return 0;
 }

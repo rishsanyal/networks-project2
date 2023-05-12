@@ -183,10 +183,7 @@ int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
         }
     }
 
-
     cout << "Didn't match anything" << endl;
-
-
 
     return -1;
 }

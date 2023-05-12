@@ -28,7 +28,7 @@
     <UDPServer>
         <PortNumber>4000</PortNumber>
     </UDPServer> -->
-    <SPQ>
+    <!-- <SPQ>
         <NumQueues>3</NumQueues>
         <PriorityLevels>
             <Level>2</Level>
@@ -36,12 +36,14 @@
             <Level>1</Level>
         </PriorityLevels>
         <Default>1</Default>
-    </SPQ>
-    <!-- <DRR>
+    </SPQ> -->
+    <DRR>
         <NumQueues>2</NumQueues>
         <Quanta>
-            <Quantum>35</Quantum>
-            <Quantum>40</Quantum>
+            <Quantum>300</Quantum>
+            <Quantum>150</Quantum>
+            <Quantum>50</Quantum>
+            <Default>50</Default>
         </Quanta>
-    </DRR> -->
+    </DRR>
 </Config>

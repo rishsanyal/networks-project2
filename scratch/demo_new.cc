@@ -167,13 +167,30 @@ main (int argc, char *argv[])
     NS_LOG_UNCOND("DRR NumQueues: " << DRR_numQueues);
 
     xml_node<> *quanta_node = DRR_node->first_node("Quanta");
+
+    bool isDefaultSet = false;
+    uint32_t defaultPriorityLevel = std::stoi(quanta_node->first_node("Default")->value());
+
+    cout << defaultPriorityLevel << endl;
+    cout << isDefaultSet << endl;
+
+
     for (xml_node<> *quantum_node = quanta_node->first_node("Quantum");
          quantum_node;
          quantum_node = quantum_node->next_sibling("Quantum"))
     {
+
+        bool isDefault = false;
+
         uint32_t quantum = std::stoi(quantum_node->value());
+
+        if (quantum == defaultPriorityLevel && !isDefaultSet) {
+            isDefaultSet = true;
+            isDefault = true;
+        }
+
         NewTrafficClass *t1 = new NewTrafficClass(
-            10, 10000, quantum, 0, false
+            10, 10000, quantum, 0, isDefault
         );
         for(int i=0;i<filter1.size();i++) {
             t1->AddFilter(filter1[i]);
@@ -334,8 +351,9 @@ main (int argc, char *argv[])
   // );
   // t2->AddFilter(filter2);
   // 6. Pass that Traffic class to SPQ
-  // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
-  ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
+
+//   ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
+    ns3::NewDRRQueue *myFirstQueue = new ns3::NewDRRQueue();
 
   // Ptr<NewDRRQueue> myFirstQueue = CreateObject<NewDRRQueue>();
 
