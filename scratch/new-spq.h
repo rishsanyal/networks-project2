@@ -79,7 +79,7 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewPriQueue::Dequeue(){
-    cout << "NewPriQueue::Dequeue" << endl;
+    // cout << "NewPriQueue::Dequeue" << endl;
 
     return Schedule();
 }

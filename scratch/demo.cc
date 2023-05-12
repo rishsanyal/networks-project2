@@ -70,6 +70,10 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpClientHelper", LOG_LEVEL_ALL);
   // LogComponentEnable("Application", LOG_LEVEL_ALL);
 
+      // NS_LOG_INFO("Create UdpServer application on node 1.");
+    uint16_t port = 10000;
+    uint16_t portTwo = 20000;
+
   // Create three nodes
   NodeContainer nodes;
   nodes.Create (3);
@@ -79,12 +83,12 @@ main (int argc, char *argv[])
 
   // Create point-to-point channels and set their parameters
   PointToPointHelper clientToRouter;
-  clientToRouter.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-  clientToRouter.SetChannelAttribute ("Delay", StringValue ("20ms"));
+  clientToRouter.SetDeviceAttribute ("DataRate", StringValue ("4Mbps"));
+  // clientToRouter.SetChannelAttribute ("Delay", StringValue ("20ms"));
 
   PointToPointHelper routerToServer;
-  routerToServer.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  routerToServer.SetChannelAttribute ("Delay", StringValue ("20ms"));
+  routerToServer.SetDeviceAttribute ("DataRate", StringValue ("1Mbps"));
+  // routerToServer.SetChannelAttribute ("Delay", StringValue ("1ms"));
   // routerToServer.SetQueue("NewPriQueue");
 
 
@@ -143,13 +147,22 @@ main (int argc, char *argv[])
   f1->setValue(ns3::Ipv4Address("10.1.1.1"));
 
   SourcePortNumber *f1sp = new SourcePortNumber();
-  f1sp->setValue(9);
+  f1sp->setValue(10000);
+
+  DestinationPortNumber *dstPrtFltr1 = new DestinationPortNumber();
+  dstPrtFltr1->setValue(port);
+
+  DestinationPortNumber *dstPrtFltr2 = new DestinationPortNumber();
+  dstPrtFltr2->setValue(portTwo);
 
   SourceIPMask *f1sm = new SourceIPMask();
   f1sm->setValue(Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
 
   DestinationIPAddress *d1 = new DestinationIPAddress();
-  d1->setValue(ns3::Ipv4Address("10.2.2.2"));
+  d1->setValue(interfaces2.GetAddress(1));
+
+  DestinationIPAddress *d3 = new DestinationIPAddress();
+  d3->setValue(ns3::Ipv4Address("10.2.2.3"));
 
 
   DestinationIPMask *d1m = new DestinationIPMask();
@@ -160,7 +173,7 @@ main (int argc, char *argv[])
   f2->setValue(ns3::Ipv4Address("10.1.2.2"));
 
   SourcePortNumber *f2sp = new SourcePortNumber();
-  f2sp->setValue(9);
+  f2sp->setValue(20000);
 
   DestinationIPAddress *d2 = new DestinationIPAddress();
   d2->setValue(ns3::Ipv4Address("10.1.2.5"));
@@ -182,21 +195,26 @@ main (int argc, char *argv[])
   // 4. Create a new Filter Container for both of those
 
   FilterContainer *filter1 = new FilterContainer();
-  filter1->addElement(f1);
-  filter1->addElement(d1);
-  filter1->addElement(f1sm);
+  // filter1->addElement(f1);
+  // filter1->addElement(d1);
+  // filter1->addElement(f1sm);
   // filter1->addElement(f1sp);
-  filter1->addElement(d1m);
-  filter1->addElement(d1dp);
+  filter1->addElement(dstPrtFltr1);
+  // filter1->addElement(d1m);
+  // filter1->addElement(d1dp);
 
   FilterContainer *filter2 = new FilterContainer();
-  filter2->addElement(f2);
-  filter2->addElement(d2);
-  filter2->addElement(f2sm);
+  // filter2->addElement(f2);
+  // filter2->addElement(d1);
+  // filter2->addElement(f2sm);
   // filter2->addElement(f2sp);
-  filter2->addElement(d2m);
-  filter1->addElement(d2dp);
+  filter2->addElement(dstPrtFltr2);
+  // filter2->addElement(d2m);
+  // filter1->addElement(d2dp);
 
+  FilterContainer *filter3 = new FilterContainer();
+  filter3->addElement(f1);
+  filter3->addElement(d3);
 
   // 5. Create Traffic Class with those two filters
 
@@ -213,21 +231,28 @@ main (int argc, char *argv[])
   // t2->AddFilter(filter2);
 
   NewTrafficClass *t1 = new NewTrafficClass(
-      10, 10000, 35, 0, false
+      10000, 1000000, 1000000, 1, false
   );
   t1->AddFilter(filter1);
 
   NewTrafficClass *t2 = new NewTrafficClass(
-      10, 10000, 40, 0, false
+      10000, 1000000, 1000000, 2, false
   );
   t2->AddFilter(filter2);
+
+  NewTrafficClass *t3 = new NewTrafficClass(
+      100000, 1000000, 40, 3, false
+  );
+  t3->AddFilter(filter3);
   // 6. Pass that Traffic class to SPQ
   // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
   // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
 
   // Ptr<NewDRRQueue> myFirstQueue = CreateObject<NewDRRQueue>();
+  Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
   myFirstQueue->AddTrafficClass(t1);
   myFirstQueue->AddTrafficClass(t2);
+  // myFirstQueue->AddTrafficClass(t3);
 
   myFirstQueue->test();
 
@@ -270,27 +295,50 @@ main (int argc, char *argv[])
 
 
 
-    // NS_LOG_INFO("Create UdpServer application on node 1.");
-    uint16_t port = 4000;
 
     UdpServerHelper server(port);
+    UdpServerHelper serverTwo(portTwo);
 
     ApplicationContainer apps = server.Install(n2);
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(0.0));
+    apps.Stop(Seconds(120.0));
+
+    ApplicationContainer appsTwo = serverTwo.Install(n2);
+    appsTwo.Start(Seconds(1.0));
+    appsTwo.Stop(Seconds(120.0));
 
     // NS_LOG_INFO("Create UdpClient application on node 0 to send to node 1.");
-    uint32_t MaxPacketSize = 1024;
-    Time interPacketInterval = Seconds(0.025);
-    uint32_t maxPacketCount = 10;
+    uint32_t MaxPacketSize = 1000;
+    Time interPacketInterval = Seconds(0.008);
+    uint32_t maxPacketCount = 400000;
 
-    UdpClientHelper client(interfaces2.GetAddress(1), port);
-    client.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    client.SetAttribute("Interval", TimeValue(interPacketInterval));
-    client.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
-    apps = client.Install(n0);
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    UdpClientHelper client1(interfaces2.GetAddress(1), port);
+    client1.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    client1.SetAttribute("Interval", TimeValue(interPacketInterval));
+    client1.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
+    ApplicationContainer tempOne = client1.Install(n0);
+
+    tempOne.Start(Seconds(5.0));
+    tempOne.Stop(Seconds(20.0));
+
+    UdpClientHelper client2(interfaces2.GetAddress(1), portTwo);
+    client2.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    client2.SetAttribute("Interval", TimeValue(interPacketInterval));
+    client2.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
+    ApplicationContainer tempTwo = client2.Install(n0);
+
+    tempTwo.Start(Seconds(1.0));
+    tempTwo.Stop(Seconds(20.0));
+
+    // UdpClientHelper client3(Ipv4Address("10.2.2.10"), portTwo);
+    // client3.SetAttribute("MaxPackets", UintegerValue(static_cast<uint32_t>(10)));
+    // client3.SetAttribute("Interval", TimeValue(interPacketInterval));
+    // client3.SetAttribute("PacketSize", UintegerValue(100));
+    // ApplicationContainer tempThree = client3.Install(n0);
+
+    // tempThree.Start(Seconds(1.0));
+    // tempThree.Stop(Seconds(10.0));
+
 
   // PacketSinkHelper receiver("ns3::UdpSocketFactory", InetSocketAddress(interfaces2.GetAddress(1), 10000));
   // ApplicationContainer sinkApp = receiver.Install(nodes.Get(1));
@@ -326,8 +374,8 @@ main (int argc, char *argv[])
   // echoClient1.SetFill(clientApps1.Get(0), "Hello World");
 
   // // Enable generating the pcap files
-  clientToRouter.EnablePcapAll("client-router");
-  routerToServer.EnablePcapAll("router-server");
+  clientToRouter.EnablePcap("client-router", devices1.Get(0));
+  routerToServer.EnablePcap("router-server", devices2.Get(1));
 
   Simulator::Run ();
   Simulator::Destroy ();
