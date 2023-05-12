@@ -44,7 +44,6 @@ bool DestinationIPAddress::match(Ptr<Packet> p){
         return true;
     } else {
         cout << ipHeader.GetDestination() << endl;
-        cout << "DestinationIPAddress: " << this->value << endl;
         return false;
     }
 }

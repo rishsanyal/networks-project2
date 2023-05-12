@@ -35,17 +35,11 @@ bool SourceIPAddress::match(Ptr<Packet> p){
     Ipv4Header ipHeader;
     tempPacket->RemoveHeader(ipHeader);
 
-    UdpHeader udpHeader;
-    tempPacket->RemoveHeader(udpHeader);
-
     if(ipHeader.GetSource() == value){
         // 1
         return true;
     } else {
         // 0
-
-        cout << "SourceIPAddress: " << this->value << endl;
-
         return false;
     }
 }

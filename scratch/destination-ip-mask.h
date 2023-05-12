@@ -46,8 +46,6 @@ bool DestinationIPMask::match(Ptr<Packet> p){
         return true;
     }
 
-    cout << "DestinationIPMask: " << this->value << " " << this->address << endl;
-
     return false;
 }
 

@@ -16,11 +16,14 @@ class ProtocolNumber : public FilterElement {
         }
 
         bool match(Ptr<Packet> p) override{
+
+            PppHeader pppHeader;
+            p->RemoveHeader(pppHeader);
+
             Ipv4Header header;
             p->PeekHeader(header);
 
             if(header.GetProtocol() == value){
-                // 1
                 return true;
             }
 

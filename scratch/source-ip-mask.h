@@ -39,9 +39,6 @@ bool SourceIPMask::match(Ptr<Packet> p){
     Ipv4Header ipHeader;
     tempPacket->RemoveHeader(ipHeader);
 
-    UdpHeader udpHeader;
-    tempPacket->RemoveHeader(udpHeader);
-
     if (this->value.IsMatch(ipHeader.GetSource(), this->address)){
         return true;
     }
