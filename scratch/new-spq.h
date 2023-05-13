@@ -3,9 +3,7 @@
 
 #include "ns3/packet.h"
 
-// #include <fstream>
 #include "new-diffserv.h"
-// #include "queue-mode.cc"
 #include <stdint.h>
 
 using namespace std;
@@ -39,10 +37,9 @@ public:
 
 
 private:
-    Ptr<ns3::Packet> DoDequeue(int priorityLevel);
-
     bool DoEnqueue(Ptr<ns3::Packet> p);
     Ptr<ns3::Packet> DoRemove();
+    Ptr<ns3::Packet> DoDequeue();
     Ptr<const ns3::Packet> DoPeek() const;
 
     int noOfQueues;
@@ -71,6 +68,10 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewPriQueue::Dequeue(){
+    return DoDequeue();
+}
+
+Ptr<ns3::Packet> NewPriQueue::DoDequeue(){
     return Schedule();
 }
 
@@ -113,10 +114,6 @@ Ptr<ns3::Packet> NewPriQueue::Schedule(){
 uint32_t NewPriQueue::Classify(Ptr<ns3::Packet> p){
     int trafficClassIndex = checkForPacketInAllTrafficClasses(p);
     return trafficClassIndex;
-}
-
-Ptr<ns3::Packet> NewPriQueue::DoDequeue(int priorityLevel){
-    return Dequeue();
 }
 
 bool NewPriQueue::DoEnqueue(Ptr<ns3::Packet> p){

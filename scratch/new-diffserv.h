@@ -119,7 +119,7 @@ void NewDiffServ::AddTrafficClass(NewTrafficClass* trafficClass) {
 }
 
 Ptr<ns3::Packet> NewDiffServ::DoDequeue() {
-    return Dequeue();
+    return nullptr;
 }
 
 bool NewDiffServ::DoEnqueue(Ptr<ns3::Packet> p) {

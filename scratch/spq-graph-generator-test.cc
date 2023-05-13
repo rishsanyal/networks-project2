@@ -20,13 +20,6 @@
 #include "destination-ip-mask.h"
 #include "destination-port-number.h"
 
-// Default Network Topology
-//
-//       10.1.1.0         10.2.2.0
-// n0 -------------- n1 -------------- n2
-//    point-to-point    point-to-point
-//
-
 using namespace ns3;
 using namespace std;
 
@@ -38,7 +31,6 @@ main (int argc, char *argv[])
 
 
   Time::SetResolution (Time::NS);
-
   LogComponentEnable ("UdpClient", LOG_LEVEL_ALL);
   LogComponentEnable("UdpClientHelper", LOG_LEVEL_ALL);
 
@@ -150,22 +142,32 @@ main (int argc, char *argv[])
   // filter2->addElement(d2m);
   // filter1->addElement(d2dp);
 
+  FilterContainer *filter3 = new FilterContainer();
+  filter3->addElement(f1);
+  filter3->addElement(d3);
+
   // 5. Create Traffic Class with those two filters
-// 10000 -> High Priority
+
   NewTrafficClass *t1 = new NewTrafficClass(
       10000, 1000000, 1000000, 1, false
   );
   t1->AddFilter(filter1);
 
-// 20000 -> Low Priority
   NewTrafficClass *t2 = new NewTrafficClass(
       10000, 1000000, 1000000, 2, false
   );
   t2->AddFilter(filter2);
 
+  NewTrafficClass *t3 = new NewTrafficClass(
+      100000, 1000000, 40, 3, false
+  );
+  t3->AddFilter(filter3);
+  // 6. Pass that Traffic class to SPQ
+
   Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
   myFirstQueue->AddTrafficClass(t1);
   myFirstQueue->AddTrafficClass(t2);
+  // myFirstQueue->AddTrafficClass(t3);
 
   myFirstQueue->test();
 
@@ -183,11 +185,11 @@ main (int argc, char *argv[])
   apps.Stop(Seconds(120.0));
 
   ApplicationContainer appsTwo = serverTwo.Install(n2);
-  appsTwo.Start(Seconds(0.0));
+  appsTwo.Start(Seconds(1.0));
   appsTwo.Stop(Seconds(120.0));
 
   // NS_LOG_INFO("Create UdpClient application on node 0 to send to node 1.");
-  uint32_t MaxPacketSize = 1075;
+  uint32_t MaxPacketSize = 1000;
   Time interPacketInterval = Seconds(0.008);
   uint32_t maxPacketCount = 400000;
 
@@ -197,8 +199,8 @@ main (int argc, char *argv[])
   client1.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
   ApplicationContainer tempOne = client1.Install(n0);
 
-  tempOne.Start(Seconds(2.0));
-  tempOne.Stop(Seconds(30.0));
+  tempOne.Start(Seconds(5.0));
+  tempOne.Stop(Seconds(20.0));
 
   UdpClientHelper client2(interfaces2.GetAddress(1), portTwo);
   client2.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
@@ -206,8 +208,8 @@ main (int argc, char *argv[])
   client2.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
   ApplicationContainer tempTwo = client2.Install(n0);
 
-  tempTwo.Start(Seconds(0.0));
-  tempTwo.Stop(Seconds(30.0));
+  tempTwo.Start(Seconds(1.0));
+  tempTwo.Stop(Seconds(20.0));
 
   // // Enable generating the pcap files
   clientToRouter.EnablePcap("client-router", devices1.Get(0));
