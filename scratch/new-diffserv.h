@@ -119,12 +119,10 @@ void NewDiffServ::AddTrafficClass(NewTrafficClass* trafficClass) {
 }
 
 Ptr<ns3::Packet> NewDiffServ::DoDequeue() {
-    cout << "DoDequeue" << endl;
     return Dequeue();
 }
 
 bool NewDiffServ::DoEnqueue(Ptr<ns3::Packet> p) {
-    cout << "DoEnqueue" << endl;
     return Enqueue(p);
 }
 
@@ -144,12 +142,9 @@ int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
 
     for (int i = 0; i < q_class.size(); i++) {
         if (q_class[i]->GetIsDefault()) {
-            cout << "Matched default:" << i << endl;
             return i;
         }
     }
-
-    cout << "Didn't match anything" << endl;
 
     return -1;
 }
@@ -160,21 +155,16 @@ Ptr<ns3::Packet> NewDiffServ::DequeueFromIndex(int vectorIndex) {
 
 
 Ptr<ns3::Packet> NewDiffServ::DoRemove() {
-    cout << "DoRemove" << endl;
     return Dequeue();
 }
 
 Ptr<const ns3::Packet> NewDiffServ::DoPeek() const {
-    cout << "DoPeek" << endl;
     return nullptr;
 }
 
 void NewDiffServ::test(){
     cout << "DiffServ::test" << endl;
 }
-
-
-
 
 } // namespace name
 

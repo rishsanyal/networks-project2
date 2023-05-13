@@ -266,11 +266,6 @@ bool testSPQ(){
     // spq->Enqueue(p_2_3);
     spq->Enqueue(p_default);
 
-    // const char * source_ip_three = "10.3.2.1";
-    // Ptr<ns3::Packet> p_3_1 = __createPacket("p_2_1", source_ip_three);
-    // cout << p_3_1->GetUid() << endl;
-    // spq->Enqueue(p_3_1);
-
 
     Ptr<ns3::Packet> p1 = spq->Dequeue();
     if (p1 == NULL) {
@@ -409,11 +404,6 @@ bool testDRR(){
     drr->Enqueue(p_1_2);
     drr->Enqueue(p_2_2);
     drr->Enqueue(p_2_3);
-
-    // const char * source_ip_three = "10.3.2.1";
-    // Ptr<ns3::Packet> p_3_1 = __createPacket("p_2_1", source_ip_three);
-    // cout << p_3_1->GetUid() << endl;
-    // spq->Enqueue(p_3_1);
 
 
     Ptr<ns3::Packet> p1 = drr->Dequeue();
