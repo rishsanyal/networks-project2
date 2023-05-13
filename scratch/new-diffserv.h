@@ -51,6 +51,8 @@ public:
     void SetMode(NewDiffServ::QueueMode mode);
     NewDiffServ::QueueMode GetMode();
 
+    void test();
+
 private:
     Ptr<ns3::Packet> DoDequeue();
     bool DoEnqueue(Ptr<ns3::Packet> p);
@@ -166,6 +168,11 @@ Ptr<const ns3::Packet> NewDiffServ::DoPeek() const {
     cout << "DoPeek" << endl;
     return nullptr;
 }
+
+void NewDiffServ::test(){
+    cout << "DiffServ::test" << endl;
+}
+
 
 
 

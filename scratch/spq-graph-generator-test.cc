@@ -8,7 +8,6 @@
 #include "ns3/applications-module.h"
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/udp-header.h"
-#include "twoQueue.h"
 #include "new-spq.h"
 #include "new-drr.h"
 #include "filter-container.h"

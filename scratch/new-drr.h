@@ -26,7 +26,6 @@ public:
     uint32_t Classify(Ptr<ns3::Packet> p);
 
     void AddTrafficClass(NewTrafficClass* trafficClass);
-    void test();
 
     // using NewDiffServ::AddTrafficClass;
     using NewDiffServ::EnqueueAtIndex;
@@ -153,10 +152,6 @@ Ptr<const ns3::Packet> NewDRRQueue::DoPeek() const{
     vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
     Ptr<const ns3::Packet> item = trafficClasses[currentQueueIndex]->Peek();
     return item;
-}
-
-void NewDRRQueue::test(){
-    cout << "NewDRRQueue::test" << endl;
 }
 
 void NewDRRQueue::AddTrafficClass(NewTrafficClass* trafficClass){

@@ -32,8 +32,6 @@ public:
     Ptr<ns3::Packet> Schedule() override;
     uint32_t Classify(Ptr<ns3::Packet> p) override;
 
-    void test();
-
     using NewDiffServ::AddTrafficClass;
     using NewDiffServ::EnqueueAtIndex;
     using NewDiffServ::checkForPacketInAllTrafficClasses;
@@ -54,7 +52,6 @@ private:
 };
 
 NewPriQueue::NewPriQueue() {
-    cout << "NewPriQueue" << endl;
     noOfQueues = 0;
     priorityLevels = vector<int>();
     q_class = vector<NewTrafficClass*>();
@@ -62,13 +59,9 @@ NewPriQueue::NewPriQueue() {
 }
 
 bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
-    cout << "NewPriQ::Enqueue" << endl;
-
     int vectorIndex = Classify(p);
 
     if (vectorIndex == -1) {
-        cout << "No matching queue found. No default queue set" << endl;
-
         return false;
     }
 
@@ -78,19 +71,15 @@ bool NewPriQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewPriQueue::Dequeue(){
-    // cout << "NewPriQueue::Dequeue" << endl;
-
     return Schedule();
 }
 
 
 Ptr<ns3::Packet> NewPriQueue::Remove(){
-    cout << "NewPriQueue::Remove" << endl;
     return DoRemove();
 }
 
 Ptr<const ns3::Packet> NewPriQueue::Peek() const{
-    cout << "NewPriQueue::Peek" << endl;
     return DoPeek();
 }
 
@@ -127,24 +116,19 @@ uint32_t NewPriQueue::Classify(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewPriQueue::DoDequeue(int priorityLevel){
-    cout << "NewPriQueue::DoDequeue " << endl;
-    cout << "priorityLevel: " << priorityLevel << endl;
     return Dequeue();
 }
 
 bool NewPriQueue::DoEnqueue(Ptr<ns3::Packet> p){
-    // cout << "NewPriQueue::DoEnqueue" << endl;
     return Enqueue(p);
 }
 
 Ptr<ns3::Packet> NewPriQueue::DoRemove(){
-    cout << "NewPriQueue::DoRemove" << endl;
     return Dequeue();
 }
 
 Ptr<const ns3::Packet> NewPriQueue::DoPeek() const{
     cout << "NewPriQueue::DoPeek" << endl;
-    // return nullptr;
 
     vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
 
@@ -167,10 +151,6 @@ Ptr<const ns3::Packet> NewPriQueue::DoPeek() const{
 
     Ptr<const ns3::Packet> item = trafficClasses[index]->Peek();
     return item;
-}
-
-void NewPriQueue::test(){
-    cout << "NewPriQueue::test" << endl;
 }
 
 } // namespace ns3
