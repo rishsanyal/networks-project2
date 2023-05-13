@@ -86,7 +86,7 @@ bool NewDRRQueue::Enqueue(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewDRRQueue::Dequeue(){
-    Ptr<ns3::Packet> dequedPacket = Schedule();
+    Ptr<ns3::Packet> dequedPacket = DoDequeue();
     return dequedPacket;
 }
 
@@ -137,7 +137,8 @@ uint32_t NewDRRQueue::Classify(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewDRRQueue::DoDequeue(){
-    return Dequeue();
+    Ptr<ns3::Packet> dequedPacket = Schedule();
+    return dequedPacket;
 }
 
 bool NewDRRQueue::DoEnqueue(Ptr<ns3::Packet> p){
