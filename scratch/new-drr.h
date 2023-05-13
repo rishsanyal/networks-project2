@@ -110,7 +110,6 @@ Ptr<const ns3::Packet> NewDRRQueue::Peek() const{
 Ptr<ns3::Packet> NewDRRQueue::Schedule(){
 
     if (checkEmptyTrafficClasses()) {
-        // cout << "NewDRRQueue::Schedule: All traffic classes are empty" << endl;
         return nullptr;
     }
 

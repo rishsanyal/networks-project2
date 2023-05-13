@@ -281,7 +281,7 @@ main (int argc, char *argv[])
   client1.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
   ApplicationContainer tempOne = client1.Install(n0);
 
-  tempOne.Start(Seconds(1.0));
+  tempOne.Start(Seconds(0.0));
   tempOne.Stop(Seconds(60.0));
 
   UdpClientHelper client2(interfaces2.GetAddress(1), portTwo);
@@ -290,7 +290,7 @@ main (int argc, char *argv[])
   client2.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
   ApplicationContainer tempTwo = client2.Install(n0);
 
-  tempTwo.Start(Seconds(1.0));
+  tempTwo.Start(Seconds(0.0));
   tempTwo.Stop(Seconds(60.0));
 
   UdpClientHelper client3(interfaces2.GetAddress(1), portThree);
@@ -299,7 +299,7 @@ main (int argc, char *argv[])
   client3.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
   ApplicationContainer tempThree = client3.Install(n0);
 
-  tempThree.Start(Seconds(1.0));
+  tempThree.Start(Seconds(0.0));
   tempThree.Stop(Seconds(60.0));
 
   // // Enable generating the pcap files

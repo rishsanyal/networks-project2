@@ -49,18 +49,6 @@
 #include <iostream>
 #include <unistd.h>
 
-// #include "src/network/utils/temp-queue.h"
-// #include "ns3/temp-queue.h"
-// #include "temp-queue.h"
-// #include "tempQueue.h"
-
-// Default Network Topology
-//
-//       10.1.1.0
-// n0 -------------- n1
-//    point-to-point
-//
-
 using namespace ns3;
 using namespace std;
 
@@ -100,20 +88,6 @@ Ptr<ns3::Packet> __createPacket(string msg, const char* sourceIP = SOURCE_IP){
 }
 
 void testSourceIPAdress(Ptr<ns3::Packet> p1){
-    // UdpHeader udpHeader;
-    // udpHeader.SetSourcePort(1234);
-    // udpHeader.SetDestinationPort(5678);
-
-    // ns3::Ipv4Header ipv4Header;
-    // ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
-    // ipv4Header.SetDestination(ns3::Ipv4Address("10.0.0.2")); // Set the destination IP address
-
-    // PppHeader pppHeader;
-    // pppHeader.SetProtocol(0x0021);
-
-    // p1->AddHeader(udpHeader);
-    // p1->AddHeader(ipv4Header);
-    // p1->AddHeader(pppHeader);
 
     SourceIPAddress *f1 = new SourceIPAddress();
     f1->setValue(Ipv4Address("10.0.1.1"));
