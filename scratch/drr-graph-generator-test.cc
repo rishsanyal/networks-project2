@@ -22,9 +22,7 @@
 #include "ns3/traffic-control-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/flow-monitor-helper.h"
-// #include "ns3/drop-tail-queue.h"
 #include "ns3/udp-header.h"
-// #include "ns3/new-queue.h"
 #include "twoQueue.h"
 #include "new-spq.h"
 #include "new-drr.h"
@@ -38,16 +36,11 @@
 #include "destination-ip-mask.h"
 #include "destination-port-number.h"
 
-// #include "src/network/utils/temp-queue.h"
-// #include "ns3/temp-queue.h"
-// #include "temp-queue.h"
-// #include "tempQueue.h"
-
 // Default Network Topology
 //
-//       10.1.1.0
-// n0 -------------- n1
-//    point-to-point
+//       10.1.1.0          10.2.2.0
+// n0 -------------- n1 -------------- n2
+//    point-to-point    point-to-point
 //
 
 using namespace ns3;
@@ -61,19 +54,13 @@ main (int argc, char *argv[])
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 
-
   Time::SetResolution (Time::NS);
-  // LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  // LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
-  // LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnable ("UdpClient", LOG_LEVEL_ALL);
   LogComponentEnable("UdpClientHelper", LOG_LEVEL_ALL);
-  // LogComponentEnable("Application", LOG_LEVEL_ALL);
 
-      // NS_LOG_INFO("Create UdpServer application on node 1.");
-    uint16_t port = 10000;
-    uint16_t portTwo = 20000;
-    uint16_t portThree = 30000;
+  uint16_t port = 10000;
+  uint16_t portTwo = 20000;
+  uint16_t portThree = 30000;
 
   // Create three nodes
   NodeContainer nodes;
@@ -92,45 +79,13 @@ main (int argc, char *argv[])
   routerToServer.SetChannelAttribute ("Delay", StringValue ("10ms"));
   // routerToServer.SetQueue("NewPriQueue");
 
-
-  // Ptr<PointToPointNetDevice> p2pDev = CreateObject<PointToPointNetDevice> ();
-  // p2pDev->SetQueue (CreateObject<TwoQueues> ());
-  // n1->AddDevice (p2pDev);
-
-  // Ptr<SimpleNetDevice> p2pDev = CreateObject<SimpleNetDevice> ();
-  // p2pDev->SetQueue (CreateObject<TwoQueues> ());
-  // n1->GetDevice(1)-> (p2pDev);
-
   // Install the channels on the nodes
   NetDeviceContainer devices1 = clientToRouter.Install (n0, n1);
   NetDeviceContainer devices2 = routerToServer.Install (n1, n2);
 
-  // Ptr<TempQueue<Packet>> myQueue = CreateObject<TempQueue<Packet>>();
-  // Ptr<PointToPointNetDevice> device = n1->GetDevice(0)->GetObject<PointToPointNetDevice>();
-
-  // Ptr<Node> middleNode = nodes.Get(1);
-  // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  // Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
-  // middleDevice->SetQueue(myQueue);
-
   // Install the InternetStack on the nodes
   InternetStackHelper stack;
   stack.InstallAll();
-
-  // Set up traffic control for SPQ
-  // SPQ spq;
-  // std::string configFilename = argv[1];
-  // spq.SetConfig (configFilename);
-  // spq.Install (devices.Get (1));
-
-  // Use TrafficControlHelper to install the custom queue on devices1
-  // TrafficControlHelper tch;
-  // tch.SetRootQueueDisc ("TwoQueues");
-  // tch.Install (devices1);
-
-  // Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
-  // firstDevice->SetQueue(myTempQueue);
-
 
   // Assign IPv4 addresses to the devices
   Ipv4AddressHelper address1;
@@ -236,12 +191,11 @@ main (int argc, char *argv[])
       100000, 1000000, 300, 3, false
   );
   t3->AddFilter(filter3);
+
+
   // 6. Pass that Traffic class to SPQ
-  // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
-  // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
 
   Ptr<NewDRRQueue> myFirstQueue = CreateObject<NewDRRQueue>();
-//   Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
   myFirstQueue->AddTrafficClass(t1);
   myFirstQueue->AddTrafficClass(t2);
   myFirstQueue->AddTrafficClass(t3);
@@ -270,7 +224,6 @@ main (int argc, char *argv[])
   appsThree.Start(Seconds(0.0));
   appsThree.Stop(Seconds(60.0));
 
-  // NS_LOG_INFO("Create UdpClient application on node 0 to send to node 1.");
   uint32_t MaxPacketSize = 600;
   Time interPacketInterval = Seconds(0.009);
   uint32_t maxPacketCount = 10000;

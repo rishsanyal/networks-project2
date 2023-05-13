@@ -1,18 +1,3 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/network-module.h"
@@ -22,9 +7,7 @@
 #include "ns3/traffic-control-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/flow-monitor-helper.h"
-// #include "ns3/drop-tail-queue.h"
 #include "ns3/udp-header.h"
-// #include "ns3/new-queue.h"
 #include "twoQueue.h"
 #include "new-spq.h"
 #include "new-drr.h"
@@ -38,22 +21,15 @@
 #include "destination-ip-mask.h"
 #include "destination-port-number.h"
 
-// #include "src/network/utils/temp-queue.h"
-// #include "ns3/temp-queue.h"
-// #include "temp-queue.h"
-// #include "tempQueue.h"
-
 // Default Network Topology
 //
-//       10.1.1.0
-// n0 -------------- n1
-//    point-to-point
+//       10.1.1.0         10.2.2.0
+// n0 -------------- n1 -------------- n2
+//    point-to-point    point-to-point
 //
 
 using namespace ns3;
 using namespace std;
-
-// NS_LOG_COMPONENT_DEFINE("FirstScriptExample");
 
 int
 main (int argc, char *argv[])
@@ -63,16 +39,12 @@ main (int argc, char *argv[])
 
 
   Time::SetResolution (Time::NS);
-  // LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  // LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
-  // LogComponentEnableAll (LOG_PREFIX_TIME);
+
   LogComponentEnable ("UdpClient", LOG_LEVEL_ALL);
   LogComponentEnable("UdpClientHelper", LOG_LEVEL_ALL);
-  // LogComponentEnable("Application", LOG_LEVEL_ALL);
 
-      // NS_LOG_INFO("Create UdpServer application on node 1.");
-    uint16_t port = 10000;
-    uint16_t portTwo = 20000;
+  uint16_t port = 10000;
+  uint16_t portTwo = 20000;
 
   // Create three nodes
   NodeContainer nodes;
@@ -89,47 +61,14 @@ main (int argc, char *argv[])
   PointToPointHelper routerToServer;
   routerToServer.SetDeviceAttribute ("DataRate", StringValue ("1Mbps"));
   routerToServer.SetChannelAttribute ("Delay", StringValue ("10ms"));
-  // routerToServer.SetQueue("NewPriQueue");
-
-
-  // Ptr<PointToPointNetDevice> p2pDev = CreateObject<PointToPointNetDevice> ();
-  // p2pDev->SetQueue (CreateObject<TwoQueues> ());
-  // n1->AddDevice (p2pDev);
-
-  // Ptr<SimpleNetDevice> p2pDev = CreateObject<SimpleNetDevice> ();
-  // p2pDev->SetQueue (CreateObject<TwoQueues> ());
-  // n1->GetDevice(1)-> (p2pDev);
 
   // Install the channels on the nodes
   NetDeviceContainer devices1 = clientToRouter.Install (n0, n1);
   NetDeviceContainer devices2 = routerToServer.Install (n1, n2);
 
-  // Ptr<TempQueue<Packet>> myQueue = CreateObject<TempQueue<Packet>>();
-  // Ptr<PointToPointNetDevice> device = n1->GetDevice(0)->GetObject<PointToPointNetDevice>();
-
-  // Ptr<Node> middleNode = nodes.Get(1);
-  // Ptr<PointToPointNetDevice> middleDevice = n1->GetDevice(1)->GetObject<PointToPointNetDevice>();
-  // Ptr<NewTempQueue<Packet>> myQueue = CreateObject<NewTempQueue<Packet>>();
-  // middleDevice->SetQueue(myQueue);
-
   // Install the InternetStack on the nodes
   InternetStackHelper stack;
   stack.InstallAll();
-
-  // Set up traffic control for SPQ
-  // SPQ spq;
-  // std::string configFilename = argv[1];
-  // spq.SetConfig (configFilename);
-  // spq.Install (devices.Get (1));
-
-  // Use TrafficControlHelper to install the custom queue on devices1
-  // TrafficControlHelper tch;
-  // tch.SetRootQueueDisc ("TwoQueues");
-  // tch.Install (devices1);
-
-  // Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
-  // firstDevice->SetQueue(myTempQueue);
-
 
   // Assign IPv4 addresses to the devices
   Ipv4AddressHelper address1;
@@ -212,35 +151,22 @@ main (int argc, char *argv[])
   // filter2->addElement(d2m);
   // filter1->addElement(d2dp);
 
-  FilterContainer *filter3 = new FilterContainer();
-  filter3->addElement(f1);
-  filter3->addElement(d3);
-
   // 5. Create Traffic Class with those two filters
-
+// 10000 -> High Priority
   NewTrafficClass *t1 = new NewTrafficClass(
       10000, 1000000, 1000000, 1, false
   );
   t1->AddFilter(filter1);
 
+// 20000 -> Low Priority
   NewTrafficClass *t2 = new NewTrafficClass(
       10000, 1000000, 1000000, 2, false
   );
   t2->AddFilter(filter2);
 
-  NewTrafficClass *t3 = new NewTrafficClass(
-      100000, 1000000, 40, 3, false
-  );
-  t3->AddFilter(filter3);
-  // 6. Pass that Traffic class to SPQ
-  // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
-  // ns3::NewPriQueue *myFirstQueue = new ns3::NewPriQueue();
-
-  // Ptr<NewDRRQueue> myFirstQueue = CreateObject<NewDRRQueue>();
   Ptr<NewPriQueue> myFirstQueue = CreateObject<NewPriQueue>();
   myFirstQueue->AddTrafficClass(t1);
   myFirstQueue->AddTrafficClass(t2);
-  // myFirstQueue->AddTrafficClass(t3);
 
   myFirstQueue->test();
 
@@ -258,11 +184,11 @@ main (int argc, char *argv[])
   apps.Stop(Seconds(120.0));
 
   ApplicationContainer appsTwo = serverTwo.Install(n2);
-  appsTwo.Start(Seconds(1.0));
+  appsTwo.Start(Seconds(0.0));
   appsTwo.Stop(Seconds(120.0));
 
   // NS_LOG_INFO("Create UdpClient application on node 0 to send to node 1.");
-  uint32_t MaxPacketSize = 1000;
+  uint32_t MaxPacketSize = 1075;
   Time interPacketInterval = Seconds(0.008);
   uint32_t maxPacketCount = 400000;
 
@@ -272,8 +198,8 @@ main (int argc, char *argv[])
   client1.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
   ApplicationContainer tempOne = client1.Install(n0);
 
-  tempOne.Start(Seconds(5.0));
-  tempOne.Stop(Seconds(20.0));
+  tempOne.Start(Seconds(2.0));
+  tempOne.Stop(Seconds(30.0));
 
   UdpClientHelper client2(interfaces2.GetAddress(1), portTwo);
   client2.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
@@ -281,8 +207,8 @@ main (int argc, char *argv[])
   client2.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
   ApplicationContainer tempTwo = client2.Install(n0);
 
-  tempTwo.Start(Seconds(1.0));
-  tempTwo.Stop(Seconds(20.0));
+  tempTwo.Start(Seconds(0.0));
+  tempTwo.Stop(Seconds(30.0));
 
   // // Enable generating the pcap files
   clientToRouter.EnablePcap("client-router", devices1.Get(0));

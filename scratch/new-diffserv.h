@@ -49,20 +49,13 @@ public:
     int checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p);
     void addPacketToTrafficClass(Ptr<ns3::Packet> p, int vectorIndex);
 
-
     bool EnqueueAtIndex(Ptr<ns3::Packet> p, int vectorIndex);
     Ptr<ns3::Packet> DequeueFromIndex(int vectorIndex);
 
     vector<NewTrafficClass*> GetTrafficClasses() const;
 
-
     void SetMode(NewDiffServ::QueueMode mode);
     NewDiffServ::QueueMode GetMode();
-
-
-    // For key we know the index of the vector
-    // std::map<uint32_t, int> priorityMap;
-    // priority_queue <tuple<int,int>> pq;
 
 private:
     Ptr<ns3::Packet> DoDequeue();
@@ -76,7 +69,6 @@ private:
 
 
 NewDiffServ::NewDiffServ() {
-    // NS_LOG_DEBUG("NewDiffServ");
     m_mode = NewDiffServ::QueueMode::Packet;
 }
 
@@ -93,28 +85,22 @@ bool NewDiffServ::Enqueue(Ptr<ns3::Packet> item) {
 }
 
 Ptr<ns3::Packet> NewDiffServ::Dequeue() {
-    cout << "New DIffServ Deque" << endl;
-    // NS_LOG_FUNCTION(this);
     return DoDequeue();
 }
 
 Ptr<ns3::Packet> NewDiffServ::Remove() {
-    // NS_LOG_FUNCTION(this);
     return DoRemove();
 }
 
 Ptr<const ns3::Packet> NewDiffServ::Peek() const {
-    // NS_LOG_FUNCTION(this);
     return DoPeek();
 }
 
 void NewDiffServ::SetMode(QueueMode mode) {
-    // NS_LOG_FUNCTION(this << mode);
     m_mode = mode;
 }
 
 NewDiffServ::QueueMode NewDiffServ::GetMode() {
-    // NS_LOG_FUNCTION(this);
     return m_mode;
 }
 
@@ -123,46 +109,31 @@ vector<NewTrafficClass*> NewDiffServ::GetTrafficClasses() const{
 }
 
 Ptr<ns3::Packet> NewDiffServ::Schedule() {
-    // NS_LOG_FUNCTION(this);
     return DoDequeue();
 }
 
 uint32_t NewDiffServ::Classify(Ptr<ns3::Packet> p) {
-    // NS_LOG_FUNCTION(this << p);
     int trafficClassIndex = checkForPacketInAllTrafficClasses(p);
 
     return trafficClassIndex;
 }
 
 void NewDiffServ::AddTrafficClass(NewTrafficClass* trafficClass) {
-    // NS_LOG_FUNCTION(this << trafficClass);
-
-    // int currentSize = q_class.size();
-    // add currentSize to the map with the key as the priority
-
-    // priorityMap.insert(std::pair<uint32_t, int>(trafficClass->GetPriorityLevel(), currentSize));
-
-    // Get the weight of the TrafficClass and add that to our weightTracker
-
     q_class.push_back(trafficClass);
 }
 
 Ptr<ns3::Packet> NewDiffServ::DoDequeue() {
-    // NS_LOG_FUNCTION(this);
     cout << "DoDequeue" << endl;
     return Dequeue();
 }
 
 bool NewDiffServ::DoEnqueue(Ptr<ns3::Packet> p) {
-    // NS_LOG_FUNCTION(this << p);
     cout << "DoEnqueue" << endl;
     return Enqueue(p);
 }
 
 
 bool NewDiffServ::EnqueueAtIndex(Ptr<ns3::Packet> p, int vectorIndex){
-    // NS_LOG_FUNCTION(this);
-
     return q_class[vectorIndex]->Enqueue(p);;
 }
 
@@ -171,7 +142,6 @@ int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
 
     for (int i = 0; i < q_class.size(); i++) {
         if (q_class[i]->Match(p) ) {
-            // cout << "Matched:" << i << endl;
             return i;
         }
     }
@@ -189,19 +159,16 @@ int NewDiffServ::checkForPacketInAllTrafficClasses(Ptr<ns3::Packet> p) {
 }
 
 Ptr<ns3::Packet> NewDiffServ::DequeueFromIndex(int vectorIndex) {
-    // cout << "Dequeue from index: " << vectorIndex << endl;
     return q_class[vectorIndex]->Dequeue();
 }
 
 
 Ptr<ns3::Packet> NewDiffServ::DoRemove() {
-    // NS_LOG_FUNCTION(this);
     cout << "DoRemove" << endl;
     return Dequeue();
 }
 
 Ptr<const ns3::Packet> NewDiffServ::DoPeek() const {
-    // NS_LOG_FUNCTION(this);
     cout << "DoPeek" << endl;
     return nullptr;
 }

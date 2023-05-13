@@ -1,18 +1,3 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/network-module.h"
@@ -22,9 +7,7 @@
 #include "ns3/traffic-control-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/flow-monitor-helper.h"
-// #include "ns3/drop-tail-queue.h"
 #include "ns3/udp-header.h"
-// #include "ns3/new-queue.h"
 #include "twoQueue.h"
 
 #include"protocol-number.cc"
@@ -48,18 +31,6 @@
 #include <string>
 #include <iostream>
 #include <unistd.h>
-
-// #include "src/network/utils/temp-queue.h"
-// #include "ns3/temp-queue.h"
-// #include "temp-queue.h"
-// #include "tempQueue.h"
-
-// Default Network Topology
-//
-//       10.1.1.0
-// n0 -------------- n1
-//    point-to-point
-//
 
 using namespace ns3;
 using namespace std;
@@ -100,21 +71,6 @@ Ptr<ns3::Packet> __createPacket(string msg, const char* sourceIP = SOURCE_IP){
 }
 
 void testSourceIPAdress(Ptr<ns3::Packet> p1){
-    // UdpHeader udpHeader;
-    // udpHeader.SetSourcePort(1234);
-    // udpHeader.SetDestinationPort(5678);
-
-    // ns3::Ipv4Header ipv4Header;
-    // ipv4Header.SetSource(ns3::Ipv4Address("10.0.0.1")); // Set the source IP address
-    // ipv4Header.SetDestination(ns3::Ipv4Address("10.0.0.2")); // Set the destination IP address
-
-    // PppHeader pppHeader;
-    // pppHeader.SetProtocol(0x0021);
-
-    // p1->AddHeader(udpHeader);
-    // p1->AddHeader(ipv4Header);
-    // p1->AddHeader(pppHeader);
-
     SourceIPAddress *f1 = new SourceIPAddress();
     f1->setValue(Ipv4Address("10.0.1.1"));
 
@@ -224,11 +180,6 @@ void testFilterPass(Ptr<ns3::Packet> p1){
 
     SourceIPAddress *f1 = new SourceIPAddress();
     f1->setValue(Ipv4Address("10.0.1.1"));
-
-    // SourceIPAddress *f2 = new SourceIPAddress();
-    // f2->setValue(Ipv4Address("10.0.1.1"));
-
-    // ------------------------------
 
     FilterContainer *filter = new FilterContainer();
 
@@ -356,9 +307,6 @@ bool testSPQ(){
 
 
     // 5. Create Traffic Class with those two filters
-
-    // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
-    // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
     NewTrafficClass *t1 = new NewTrafficClass(
         10, 10000, 0.0, 2, false
     );
@@ -374,7 +322,6 @@ bool testSPQ(){
 
     spq->AddTrafficClass(t1);
     spq->AddTrafficClass(t2);
-    // Ptr<NewSPQ> myFirstQueue = CreateObject<NewSPQ>();
 
     spq->test();
 
@@ -461,10 +408,6 @@ bool testDRR(){
         7. Check if the packets are enqueued in the correct order
     */
 
-
-    // string temp1 = string s(n, 'a');
-    // cout << temp1 << endl;
-
     std::string a(6, 'a');
     std::string b(11, 'a');
     std::string c(11, 'a');
@@ -476,7 +419,6 @@ bool testDRR(){
 
     Ptr<ns3::Packet> p_1_2 = __createPacket(b, SOURCE_IP);
     cout << p_1_2->GetUid() << ": " << p_1_2->GetSize() << endl;
-    // Ptr<ns3::Packet> p_1_3 = __createPacket("p_1_3", SOURCE_IP);
 
     // 2. Create Destination IP Address
     // ns3::Packet for queue 2
@@ -508,9 +450,6 @@ bool testDRR(){
 
 
     // 5. Create Traffic Class with those two filters
-
-    // uint32_t maxPackets, uint32_t maxBytes, double weight, uint32_t priorityLevel, bool isDefault
-    // uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = false
     NewTrafficClass *t1 = new NewTrafficClass(
         10, 10000, 35, 0, false
     );
