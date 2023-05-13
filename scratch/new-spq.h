@@ -16,8 +16,6 @@ namespace ns3
 class NewPriQueue : public NewDiffServ
 {
 
-
-
 enum QueueMode {
     ByteMode, Packet
 };
@@ -25,7 +23,6 @@ enum QueueMode {
 
 public:
     NewPriQueue();
-    // ~NewPriQueue() override;
 
     bool Enqueue(Ptr<ns3::Packet> p) override;
     Ptr<ns3::Packet> Dequeue() override;

@@ -3,9 +3,7 @@
 
 #include "ns3/packet.h"
 
-// #include <fstream>
 #include "new-diffserv.h"
-// #include "queue-mode.cc"
 #include <stdint.h>
 
 using namespace std;
@@ -55,11 +53,9 @@ private:
 };
 
 NewDRRQueue::NewDRRQueue() {
-    // cout << "NewDRRQueue" << endl;
     noOfQueues = 0;
     weightTracker = vector<int>();
-    // q_class = vector<NewTrafficClass*>();
-    m_mode = QueueMode::ByteMode; //TODO: Get this from the config file?
+    m_mode = QueueMode::ByteMode;
 }
 
 /*
@@ -79,8 +75,6 @@ NewDRRQueue::checkEmptyTrafficClasses(){
 }
 
 bool NewDRRQueue::Enqueue(Ptr<ns3::Packet> p){
-    // cout << "NewDRRQueue::Enqueue" << endl;
-
     int vectorIndex = Classify(p);
 
     if (vectorIndex == -1) {
@@ -98,12 +92,10 @@ Ptr<ns3::Packet> NewDRRQueue::Dequeue(){
 }
 
 Ptr<ns3::Packet> NewDRRQueue::Remove(){
-    // cout << "NewDRRQueue::Remove" << endl;
     return DoRemove();
 }
 
 Ptr<const ns3::Packet> NewDRRQueue::Peek() const{
-    // cout << "NewDRRQueue::Peek" << endl;
     return DoPeek();
 }
 
@@ -137,8 +129,6 @@ Ptr<ns3::Packet> NewDRRQueue::Schedule(){
         }
     }
 
-    // cout << "NewDRRQueue::Schedule " << currentQueueIndex << endl;
-
     return DequeueFromIndex(currentQueueIndex);
 }
 
@@ -148,23 +138,18 @@ uint32_t NewDRRQueue::Classify(Ptr<ns3::Packet> p){
 }
 
 Ptr<ns3::Packet> NewDRRQueue::DoDequeue(){
-    // cout << "NewDRRQueue::DoDequeue " << endl;
-
     return Dequeue();
 }
 
 bool NewDRRQueue::DoEnqueue(Ptr<ns3::Packet> p){
-    // cout << "NewDRRQueue::DoEnqueue" << endl;
     return Enqueue(p);
 }
 
 Ptr<ns3::Packet> NewDRRQueue::DoRemove(){
-    // cout << "NewDRRQueue::DoRemove" << endl;
     return Dequeue();
 }
 
 Ptr<const ns3::Packet> NewDRRQueue::DoPeek() const{
-    // cout << "NewDRRQueue::DoPeek" << endl;
     vector<NewTrafficClass*> trafficClasses = GetTrafficClasses();
     Ptr<const ns3::Packet> item = trafficClasses[currentQueueIndex]->Peek();
     return item;
@@ -175,7 +160,6 @@ void NewDRRQueue::test(){
 }
 
 void NewDRRQueue::AddTrafficClass(NewTrafficClass* trafficClass){
-    // cout << "NewDRRQueue::AddTrafficClass" << endl;
     noOfQueues++;
     weightTracker.push_back(trafficClass->GetWeight());
 

@@ -6,18 +6,12 @@
 
 #include "ns3/queue.h"
 #include "ns3/packet.h"
-// #include "src/network/utils/queue.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 #include "ns3/object-base.h"
 #include "new-traffic-class.h"
 
-// #include "queue-mode.cc"
-
-
 #include <typeinfo>
-
-// NS_LOG_COMPONENT_DEFINE("NewDiffServ");
 
 using namespace std;
 

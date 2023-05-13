@@ -9,9 +9,6 @@ using namespace ns3;
 #ifndef FILTER_ELEMENT_H
 #define FILTER_ELEMENT_H
 
-
-// NS_LOG_COMPONENT_DEFINE("FilterElement");
-
 namespace ns3
 {
 class FilterElement : public Object{

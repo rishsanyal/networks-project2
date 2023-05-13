@@ -38,8 +38,6 @@ bool DestinationIPAddress::match(Ptr<Packet> p){
     UdpHeader udpHeader;
     tempPacket->RemoveHeader(udpHeader);
 
-    // cout << "Packet header" << ipHeader.GetDestination() << endl;
-
     if(ipHeader.GetDestination()==value){
         return true;
     } else {

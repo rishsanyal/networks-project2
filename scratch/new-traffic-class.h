@@ -17,8 +17,6 @@ namespace ns3
 class NewTrafficClass{
     public:
         NewTrafficClass(uint32_t maxPackets = 10, uint32_t maxBytes = 10, double weight = 0.0, uint32_t priorityLevel = 0, bool isDefault = true);
-        // NewTrafficClass();
-        // ~NewTrafficClass();
 
         bool Enqueue(Ptr<Packet> p);
         Ptr<Packet> Dequeue();
